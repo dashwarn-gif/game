@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Pembelajaran Interaktif & Game Pohon Filogeni</title>
+    <title>Game & Evaluasi Pohon Filogeni</title>
     <style>
         :root {
             --bg-color: #f8fafc;
@@ -136,10 +136,6 @@
             margin-top: 6px;
         }
 
-        .materi-section li {
-            margin-bottom: 4px;
-        }
-
         .materi-table {
             width: 100%;
             border-collapse: collapse;
@@ -158,7 +154,7 @@
             color: #0f172a;
         }
 
-        /* Stats & Game Board */
+        /* HUD & Game Board */
         .stats-bar {
             display: flex;
             justify-content: space-between;
@@ -206,11 +202,13 @@
         .phylo-board {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             background: #ffffff;
             padding: 14px;
             border-radius: 6px;
             border: 1.5px solid var(--border-color);
+            max-height: 420px;
+            overflow-y: auto;
         }
 
         .tree-node-row {
@@ -244,7 +242,7 @@
 
         .drop-zone {
             min-width: 240px;
-            min-height: 48px;
+            min-height: 44px;
             border: 2px dashed var(--border-color);
             border-radius: 6px;
             display: flex;
@@ -256,11 +254,6 @@
             transition: all 0.2s;
             padding: 6px;
             cursor: pointer;
-        }
-
-        .drop-zone.active-target {
-            border-color: var(--selected);
-            background: #fffbeb;
         }
 
         .drop-zone.filled {
@@ -278,7 +271,9 @@
             padding: 14px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
-            min-height: 80px;
+            min-height: 90px;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
         .draggable-card {
@@ -294,10 +289,6 @@
             transition: transform 0.1s, border-color 0.1s;
         }
 
-        .draggable-card:hover {
-            border-color: var(--primary-hover);
-        }
-
         .draggable-card.selected-card {
             border: 2px solid var(--selected);
             background: #fef3c7;
@@ -305,8 +296,42 @@
             transform: scale(1.03);
         }
 
-        .draggable-card.dragging {
-            opacity: 0.4;
+        /* Table Review / Kunci Jawaban */
+        .review-container {
+            margin-top: 14px;
+            text-align: left;
+            max-height: 320px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        .review-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .review-table th, .review-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .review-table th {
+            background: #f1f5f9;
+            color: #0f172a;
+            position: sticky;
+            top: 0;
+        }
+
+        .status-correct {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .status-wrong {
+            color: var(--danger);
+            font-weight: bold;
         }
 
         /* Buttons */
@@ -348,23 +373,18 @@
     <!-- Menu Utama -->
     <div id="screen-home">
         <p style="margin-bottom: 12px; font-size: 0.9rem; line-height: 1.5;">
-            Pilih modul materi di bawah untuk mempelajari dasar-dasar filogeni, atau pilih chapter game untuk latihan menyusun pohon kekerabatan secara interaktif.
+            Pilih materi untuk dipelajari atau langsung mulai tantangan game 10+ soal filogeni.
         </p>
         
         <div class="menu-grid">
             <div class="menu-card materi-card" onclick="showMateri()">
                 <h3>📖 Modul Materi Pembelajaran Lengkap</h3>
-                <p>Penjelasan lengkap konsep Pohon Filogeni, Aturan Penulisan Nama Ilmiah, serta Matriks Ciri Famili Felidae & Cercopithecidae.</p>
+                <p>Penjelasan Pohon Filogeni, Binomial Nomenclature, serta rangkuman Taksonomi Felidae & Cercopithecidae.</p>
             </div>
 
-            <div class="menu-card" onclick="startChapter(0)">
-                <h3>Chapter 1: Famili Felidae (Kucing-kucingan)</h3>
-                <p>Menyusun percabangan genus <em>Leopardus</em>, <em>Acinonyx</em>, <em>Panthera</em>, dan <em>Prionailurus</em>.</p>
-            </div>
-
-            <div class="menu-card" onclick="startChapter(1)">
-                <h3>Chapter 2: Famili Cercopithecidae (Monyet Dunia Lama)</h3>
-                <p>Menyusun percabangan kelompok Kera (<em>Macaca</em>), Babon (<em>Papio</em>), Lutung (<em>Trachypithecus</em>), Monyet (<em>Colobinae</em>), dan Surili (<em>Presbytini</em>).</p>
+            <div class="menu-card" onclick="startGame()">
+                <h3>🎮 Ujian Pohon Filogeni (10 Soal Lengkap)</h3>
+                <p>Tantangan menyusun 10 cabang taksonomi spesies (Felidae & Cercopithecidae) dengan sistem 3 nyawa dan review evaluasi di akhir.</p>
             </div>
         </div>
     </div>
@@ -374,86 +394,34 @@
         <div class="materi-content">
             <div class="materi-section">
                 <h2>1. Konsep Dasar Pohon Filogeni</h2>
-                <p><strong>Pohon Filogeni</strong> adalah diagram yang menggambarkan pola hubungan kekerabatan evolusioner antara berbagai spesies makhluk hidup berdasarkan persamaan dan perbedaan ciri fisik (morfologi) maupun materi genetik (DNA/RNA).</p>
-                <ul>
-                    <li><strong>Garis Keturunan (Branch):</strong> Menunjukkan alur perubahan evolusi spesies dari waktu ke waktu.</li>
-                    <li><strong>Titik Percabangan (Node):</strong> Menunjukkan nenek moyang bersama (common ancestor) tempat dua atau lebih garis keturunan berpisah.</li>
-                    <li><strong>Kedekatan Kekerabatan:</strong> Spesies yang berada dalam satu percabangan genus yang sama memiliki hubungan kekerabatan yang jauh lebih dekat dibandingkan spesies dari genus yang berbeda.</li>
-                </ul>
+                <p><strong>Pohon Filogeni</strong> adalah diagram yang menggambarkan pola hubungan kekerabatan evolusioner antara berbagai spesies berdasarkan persamaan dan perbedaan ciri fisik maupun genetik.</p>
             </div>
 
             <div class="materi-section">
                 <h2>2. Aturan Tata Nama Binomial Nomenclature</h2>
-                <p>Sistem tata nama ganda ciptaan Carolus Linnaeus yang digunakan secara internasional:</p>
-                <ul>
-                    <li>Terdiri dari dua kata bahasa Latin. Kata pertama adalah <strong>Genus</strong> (huruf pertama KAPITAL), kata kedua adalah <strong>Spesies</strong> (semua huruf kecil).</li>
-                    <li>Ditulis miring (<em>italic</em>) pada cetakan komputer, atau digarisbawahi terpisah pada tulisan tangan.</li>
-                    <li><em>Contoh:</em> <em>Panthera tigris</em> (Harimau) &rarr; Genus: <em>Panthera</em>, Spesies: <em>tigris</em>.</li>
-                </ul>
+                <p>Terdiri dari 2 kata bahasa Latin: Kata pertama adalah <strong>Genus</strong> (huruf pertama KAPITAL), kata kedua adalah <strong>Spesies</strong> (semua huruf kecil). Ditulis miring (<em>italic</em>) atau digarisbawahi secara terpisah.</p>
             </div>
 
             <div class="materi-section">
-                <h2>3. Klasifikasi Famili Felidae (Chapter 1)</h2>
-                <p>Berdasarkan catatan papan tulis, Famili Felidae terbagi menjadi beberapa genus utama:</p>
+                <h2>3. Rangkuman Spesies & Genus (Papan Tulis 1 & 2)</h2>
                 <table class="materi-table">
                     <thead>
                         <tr>
-                            <th>Genus</th>
-                            <th>Anggota Spesies & Nama Lokal</th>
+                            <th>Famili / Kelompok</th>
+                            <th>Genus / Takson</th>
+                            <th>Contoh Spesies</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><strong>Leopardus</strong></td>
-                            <td><em>Leopardus pardalis</em> (Kucing tutul kecil)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Acinonyx</strong></td>
-                            <td><em>Acinonyx jubatus</em> (Cheetah), <em>Acinonyx intermedius</em> (Cheetah purba)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Panthera</strong></td>
-                            <td><em>Panthera tigris</em> (Harimau), <em>Panthera leo</em> (Singa), <em>Panthera onca</em> (Jaguar), <em>Panthera pardus</em> (Macan tutul), <em>Panthera uncia</em> (Macan tutul salju)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Prionailurus</strong></td>
-                            <td><em>Prionailurus bengalensis</em> (Kucing bengal), <em>Prionailurus planiceps</em> (Kucing tandang)</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="materi-section">
-                <h2>4. Klasifikasi Famili Cercopithecidae (Chapter 2)</h2>
-                <p>Famili Cercopithecidae terbagi menjadi beberapa kelompok percabangan taksonomi:</p>
-                <table class="materi-table">
-                    <thead>
-                        <tr>
-                            <th>Kelompok / Genus</th>
-                            <th>Anggota Spesies & Sebutan Kelompok</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Macaca</strong> (Kera)</td>
-                            <td><em>Macaca fuscata</em>, <em>Macaca fascicularis</em>, <em>Macaca nemestrina</em> (Beruk), <em>Macaca thibetana</em>, <em>Macaca munzala</em></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Papio</strong> (Babon)</td>
-                            <td><em>Papio hamadryas</em>, <em>Papio anubis</em>, <em>Papio kindae</em></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Trachypithecus</strong> (Lutung)</td>
-                            <td><em>Trachypithecus germaini</em>, <em>Trachypithecus phayrei</em>, <em>Trachypithecus obscurus</em></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Sub-famili Colobinae</strong> (Monyet)</td>
-                            <td><em>Simia badius</em>, <em>Simia polycomos</em>, <em>Simia nemaeus</em></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Presbytini</strong> (Surili)</td>
-                            <td><em>Presbytis mitrata</em> (Surili)</td>
-                        </tr>
+                        <tr><td>Felidae</td><td>Leopardus</td><td><em>Leopardus pardalis</em> (Kucing tutul kecil)</td></tr>
+                        <tr><td>Felidae</td><td>Acinonyx</td><td><em>Acinonyx jubatus</em> (Cheetah), <em>A. intermedius</em></td></tr>
+                        <tr><td>Felidae</td><td>Panthera</td><td><em>Panthera tigris</em> (Harimau), <em>P. leo</em> (Singa), <em>P. onca</em>, <em>P. pardus</em>, <em>P. uncia</em></td></tr>
+                        <tr><td>Felidae</td><td>Prionailurus</td><td><em>Prionailurus bengalensis</em>, <em>P. planiceps</em> (Kucing tandang)</td></tr>
+                        <tr><td>Cercopithecidae</td><td>Macaca</td><td><em>Macaca nemestrina</em> (Beruk), <em>M. fascicularis</em>, <em>M. fuscata</em></td></tr>
+                        <tr><td>Cercopithecidae</td><td>Papio</td><td><em>Papio anubis</em> (Babon), <em>P. hamadryas</em>, <em>P. kindae</em></td></tr>
+                        <tr><td>Cercopithecidae</td><td>Trachypithecus</td><td><em>Trachypithecus obscurus</em> (Lutung), <em>T. germaini</em></td></tr>
+                        <tr><td>Cercopithecidae</td><td>Colobinae</td><td><em>Simia polycomos</em> (Monyet), <em>Simia nemaeus</em></td></tr>
+                        <tr><td>Cercopithecidae</td><td>Presbytini</td><td><em>Presbytis mitrata</em> (Surili)</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -464,17 +432,17 @@
     <!-- Game Screen -->
     <div id="screen-game" class="hidden">
         <div class="stats-bar">
-            <div><span class="badge" id="hud-chapter-title">Chapter 1</span></div>
-            <div>Nyawa: <span id="hud-hearts">3</span></div>
-            <div>Waktu: <span id="hud-timer" style="color: var(--primary);">40</span>s</div>
+            <div><span class="badge">Ujian Taksonomi</span></div>
+            <div>Nyawa: <span id="hud-hearts" style="color: var(--danger);">3</span></div>
+            <div>Waktu: <span id="hud-timer" style="color: var(--primary);">90</span>s</div>
         </div>
 
         <div class="timer-bar-container">
             <div class="timer-bar" id="timer-bar"></div>
         </div>
 
-        <div class="instruction-box" id="game-instruction">
-            💡 <strong>Cara Bermain:</strong> Klik/Ketuk kartu spesies di bawah hingga berwarna kuning, lalu klik/ketuk kotak cabang yang sesuai. (Bisa juga diseret/drag).
+        <div class="instruction-box">
+            💡 <strong>Instruksi:</strong> Ketuk kartu spesies di bawah (hingga kuning), lalu ketuk slot cabang taksonomi yang sesuai. (Sistem tidak akan memberitahu letak kesalahan sampai kunci jawaban diperiksa di akhir!).
         </div>
 
         <!-- Dynamic Phylo Board -->
@@ -483,64 +451,58 @@
         <!-- Cards Dock Area -->
         <div class="cards-dock" id="cards-dock"></div>
 
-        <button class="btn btn-primary" onclick="submitAssembly()">Kunci Jawaban ➔</button>
+        <button class="btn btn-primary" onclick="submitAssembly()">Kunci & Periksa Jawaban ➔</button>
     </div>
 
-    <!-- Result Screen -->
-    <div id="screen-result" class="hidden" style="text-align: center; padding: 20px 0;">
-        <h2 id="result-header" style="margin-bottom: 10px; color: var(--primary);">Chapter Selesai</h2>
-        <p id="result-desc" style="font-size: 0.95rem; color: #475569; margin-bottom: 15px;"></p>
-        <div id="final-score-box" style="font-size: 1.15rem; font-weight: bold; margin-bottom: 18px; padding: 12px; background: #f1f5f9; border-radius: 6px;"></div>
-        <div style="display: flex; gap: 10px;">
+    <!-- Result & Review Screen -->
+    <div id="screen-result" class="hidden" style="text-align: center;">
+        <h2 id="result-header" style="margin-bottom: 6px;">Evaluasi Selesai</h2>
+        <p id="result-desc" style="font-size: 0.9rem; color: #475569; margin-bottom: 12px;"></p>
+        
+        <div id="final-score-box" style="font-size: 1.1rem; font-weight: bold; padding: 10px; background: #f1f5f9; border-radius: 6px; margin-bottom: 12px;"></div>
+
+        <h3 style="text-align: left; font-size: 0.95rem; margin-bottom: 6px; color: #334155;">Pembahasan & Rincian Jawaban Soal:</h3>
+        
+        <div class="review-container">
+            <table class="review-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Spesies Soal</th>
+                        <th>Jawaban Kamu</th>
+                        <th>Status / Jawaban Benar</th>
+                    </tr>
+                </thead>
+                <tbody id="review-table-body"></tbody>
+            </table>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 16px;">
             <button class="btn btn-outline" onclick="showHome()">Menu Utama</button>
-            <button class="btn btn-primary" id="btn-next-chapter" onclick="nextChapter()">Chapter Selanjutnya ➔</button>
+            <button class="btn btn-primary" onclick="startGame()">Coba Lagi 🔄</button>
         </div>
     </div>
 </div>
 
 <script>
-const gameData = [
-    {
-        chapterTitle: "Chapter 1: Famili Felidae",
-        timeLimit: 45,
-        nodes: [
-            { id: "node-1", target: "Leopardus", label: "Genus Leopardus", trait: "Spesies: Leopardus pardalis (Kucing tutul kecil)" },
-            { id: "node-2", target: "Acinonyx", label: "Genus Acinonyx", trait: "Spesies: Acinonyx jubatus & Acinonyx intermedius" },
-            { id: "node-3", target: "Panthera", label: "Genus Panthera", trait: "Spesies: Harimau, Singa, Jaguar, Macan tutul" },
-            { id: "node-4", target: "Prionailurus", label: "Genus Prionailurus", trait: "Spesies: Prionailurus bengalensis & P. planiceps" }
-        ],
-        cards: [
-            { id: "c1", name: "Leopardus pardalis (Kucing tutul kecil)", genus: "Leopardus" },
-            { id: "c2", name: "Acinonyx jubatus (Cheetah)", genus: "Acinonyx" },
-            { id: "c3", name: "Panthera tigris (Harimau)", genus: "Panthera" },
-            { id: "c4", name: "Prionailurus planiceps (Kucing tandang)", genus: "Prionailurus" }
-        ]
-    },
-    {
-        chapterTitle: "Chapter 2: Famili Cercopithecidae",
-        timeLimit: 50,
-        nodes: [
-            { id: "node-1", target: "Macaca", label: "Genus Macaca (Kera)", trait: "Spesies: M. fuscata, M. fascicularis, M. nemestrina" },
-            { id: "node-2", target: "Papio", label: "Genus Papio (Babon)", trait: "Spesies: P. hamadryas, P. anubis, P. kindae" },
-            { id: "node-3", target: "Trachypithecus", label: "Genus Trachypithecus (Lutung)", trait: "Spesies: T. germaini, T. phayrei, T. obscurus" },
-            { id: "node-4", target: "Colobinae", label: "Sub-famili Colobinae (Monyet)", trait: "Spesies: Simia badius, Simia polycomos" },
-            { id: "node-5", target: "Presbytini", label: "Kelompok Presbytini (Surili)", trait: "Spesies: Presbytis mitrata (Surili)" }
-        ],
-        cards: [
-            { id: "c5", name: "Macaca nemestrina (Beruk)", genus: "Macaca" },
-            { id: "c6", name: "Papio anubis (Babon)", genus: "Papio" },
-            { id: "c7", name: "Trachypithecus obscurus (Lutung)", genus: "Trachypithecus" },
-            { id: "c8", name: "Simia polycomos (Monyet)", genus: "Colobinae" },
-            { id: "c9", name: "Presbytis mitrata (Surili)", genus: "Presbytini" }
-        ]
-    }
+// 10+ Questions Dataset
+const questionsData = [
+    { id: "q1", name: "Leopardus pardalis (Kucing tutul kecil)", targetGenus: "Leopardus", label: "Cabang 1: Genus Leopardus", trait: "Kucing tutul kecil" },
+    { id: "q2", name: "Acinonyx jubatus (Cheetah)", targetGenus: "Acinonyx", label: "Cabang 2: Genus Acinonyx", trait: "Cheetah pelari cepat" },
+    { id: "q3", name: "Panthera tigris (Harimau)", targetGenus: "Panthera", label: "Cabang 3: Genus Panthera (A)", trait: "Spesies Harimau" },
+    { id: "q4", name: "Panthera leo (Singa)", targetGenus: "Panthera", label: "Cabang 4: Genus Panthera (B)", trait: "Spesies Singa" },
+    { id: "q5", name: "Prionailurus planiceps (Kucing tandang)", targetGenus: "Prionailurus", label: "Cabang 5: Genus Prionailurus", trait: "Kucing pemakan ikan/tandang" },
+    { id: "q6", name: "Macaca nemestrina (Beruk)", targetGenus: "Macaca", label: "Cabang 6: Genus Macaca (A)", trait: "Spesies Beruk" },
+    { id: "q7", name: "Macaca fascicularis (Monyet ekor panjang)", targetGenus: "Macaca", label: "Cabang 7: Genus Macaca (B)", trait: "Spesies Monyet ekor panjang" },
+    { id: "q8", name: "Papio anubis (Babon)", targetGenus: "Papio", label: "Cabang 8: Genus Papio", trait: "Spesies Babon Anubis" },
+    { id: "q9", name: "Trachypithecus obscurus (Lutung)", targetGenus: "Trachypithecus", label: "Cabang 9: Genus Trachypithecus", trait: "Spesies Lutung" },
+    { id: "q10", name: "Simia polycomos (Monyet Colobinae)", targetGenus: "Colobinae", label: "Cabang 10: Sub-famili Colobinae", trait: "Kelompok Monyet Colobinae" },
+    { id: "q11", name: "Presbytis mitrata (Surili)", targetGenus: "Presbytini", label: "Cabang 11: Kelompok Presbytini", trait: "Spesies Surili" }
 ];
 
-let currentChapterIdx = 0;
 let lives = 3;
-let timer = 0;
+let timer = 90;
 let timerInterval = null;
-let score = 0;
 let selectedCardEl = null;
 let draggedCard = null;
 
@@ -557,10 +519,8 @@ function showMateri() {
     document.getElementById('screen-materi').classList.remove('hidden');
 }
 
-function startChapter(idx) {
-    currentChapterIdx = idx;
+function startGame() {
     lives = 3;
-    score = 0;
     selectedCardEl = null;
     document.getElementById('screen-home').classList.add('hidden');
     document.getElementById('screen-result').classList.add('hidden');
@@ -570,37 +530,33 @@ function startChapter(idx) {
 
 function updateHUD() {
     document.getElementById('hud-hearts').innerText = lives;
-    document.getElementById('hud-chapter-title').innerText = gameData[currentChapterIdx].chapterTitle;
 }
 
 function loadStage() {
     updateHUD();
     selectedCardEl = null;
-    const chapter = gameData[currentChapterIdx];
     
-    // Render Board
+    // Render Board Nodes
     const board = document.getElementById('phylo-board');
     board.innerHTML = "";
-    chapter.nodes.forEach(node => {
+    questionsData.forEach(q => {
         const row = document.createElement('div');
         row.className = 'tree-node-row';
         row.innerHTML = `
             <div class="node-info">
-                <strong>${node.label}</strong><br>
-                <span>${node.trait}</span>
+                <strong>${q.label}</strong><br>
+                <span>${q.trait}</span>
             </div>
         `;
         
         const dropZone = document.createElement('div');
         dropZone.className = 'drop-zone';
-        dropZone.dataset.target = node.target;
-        dropZone.id = node.id;
+        dropZone.dataset.target = q.targetGenus;
+        dropZone.dataset.nodeId = q.id;
+        dropZone.id = `zone-${q.id}`;
         dropZone.innerText = "Ketuk untuk menempatkan kartu";
         
-        // Touch / Click event for DropZone
         dropZone.addEventListener('click', () => handleZoneClick(dropZone));
-        
-        // Native Drag events
         dropZone.addEventListener('dragover', (e) => e.preventDefault());
         dropZone.addEventListener('drop', (e) => handleDrop(e, dropZone));
 
@@ -608,43 +564,39 @@ function loadStage() {
         board.appendChild(row);
     });
 
-    // Render Cards
+    // Render Cards in Dock (Shuffled)
     const dock = document.getElementById('cards-dock');
     dock.innerHTML = "";
-    const shuffledCards = [...chapter.cards].sort(() => Math.random() - 0.5);
+    const shuffledCards = [...questionsData].sort(() => Math.random() - 0.5);
     
     shuffledCards.forEach(card => {
         const cardEl = document.createElement('div');
         cardEl.className = 'draggable-card';
         cardEl.draggable = true;
         cardEl.innerText = card.name;
-        cardEl.dataset.genus = card.genus;
-        cardEl.dataset.id = card.id;
+        cardEl.dataset.genus = card.targetGenus;
+        cardEl.dataset.cardId = card.id;
+        cardEl.dataset.fullName = card.name;
         
-        // Touch / Click Select
         cardEl.addEventListener('click', (e) => {
             e.stopPropagation();
             handleCardClick(cardEl);
         });
 
-        // Drag events
         cardEl.addEventListener('dragstart', () => {
             draggedCard = cardEl;
-            cardEl.classList.add('dragging');
         });
         cardEl.addEventListener('dragend', () => {
-            cardEl.classList.remove('dragging');
             draggedCard = null;
         });
 
         dock.appendChild(cardEl);
     });
 
-    startTimer(chapter.timeLimit);
+    startTimer(90);
 }
 
 function handleCardClick(cardEl) {
-    // If card is inside a drop zone, clicking it returns it to dock
     if (cardEl.parentElement.classList.contains('drop-zone')) {
         const zone = cardEl.parentElement;
         document.getElementById('cards-dock').appendChild(cardEl);
@@ -657,7 +609,6 @@ function handleCardClick(cardEl) {
         return;
     }
 
-    // Toggle Selection
     if (selectedCardEl === cardEl) {
         cardEl.classList.remove('selected-card');
         selectedCardEl = null;
@@ -671,12 +622,10 @@ function handleCardClick(cardEl) {
 function handleZoneClick(zone) {
     if (!selectedCardEl) return;
 
-    // If zone already has a card, return old card to dock
     if (zone.children.length > 0) {
         document.getElementById('cards-dock').appendChild(zone.children[0]);
     }
 
-    // Place selected card into zone
     zone.innerText = "";
     zone.appendChild(selectedCardEl);
     zone.classList.add('filled');
@@ -715,91 +664,114 @@ function startTimer(seconds) {
 
         if (timer <= 0) {
             clearInterval(timerInterval);
-            handlePenalty("Waktu habis!");
+            alert("Waktu Habis!");
+            endGame();
         }
     }, 1000);
 }
 
-function handlePenalty(reason) {
-    lives--;
-    updateHUD();
-    const container = document.getElementById('main-container');
-    container.classList.add('shake');
-    setTimeout(() => container.classList.remove('shake'), 400);
-
-    if (lives <= 0) {
-        endGame(false);
-    } else {
-        alert(`${reason} Nyawa berkurang! Silakan susun ulang.`);
-        loadStage();
-    }
-}
-
 function submitAssembly() {
-    const chapter = gameData[currentChapterIdx];
-    let correctCount = 0;
     let allFilled = true;
+    let correctCount = 0;
 
-    chapter.nodes.forEach(node => {
-        const zone = document.getElementById(node.id);
+    questionsData.forEach(q => {
+        const zone = document.getElementById(`zone-${q.id}`);
         if (zone.children.length === 0) {
             allFilled = false;
         } else {
-            const cardGenus = zone.children[0].dataset.genus;
-            if (cardGenus === zone.dataset.target) {
+            const placedCardGenus = zone.children[0].dataset.genus;
+            if (placedCardGenus === zone.dataset.target) {
                 correctCount++;
             }
         }
     });
 
     if (!allFilled) {
-        alert("Lengkapi semua cabang takson terlebih dahulu!");
+        alert("Lengkapi semua 11 cabang soal terlebih dahulu!");
         return;
     }
 
-    clearInterval(timerInterval);
-
-    if (correctCount === chapter.nodes.length) {
-        score = 50 + (timer * 2);
-        endGame(true);
+    if (correctCount === questionsData.length) {
+        // Perfect Score
+        clearInterval(timerInterval);
+        endGame();
     } else {
-        handlePenalty("Susunan cabang pohon belum tepat.");
+        // Ada kesalahan, tapi sistem TIDAK memberitahu nomor yang salah (Blind Feedback)
+        lives--;
+        updateHUD();
+        
+        const container = document.getElementById('main-container');
+        container.classList.add('shake');
+        setTimeout(() => container.classList.remove('shake'), 400);
+
+        if (lives <= 0) {
+            clearInterval(timerInterval);
+            alert("Nyawa kamu habis! Mari periksa hasil dan kunci jawabannya.");
+            endGame();
+        } else {
+            alert(`Ada susunan yang masih salah! (Nyawa berkurang 1, sisa: ${lives}). Coba periksa dan teliti kembali.`);
+        }
     }
 }
 
-function endGame(isWin) {
+function endGame() {
     clearInterval(timerInterval);
     document.getElementById('screen-game').classList.add('hidden');
     document.getElementById('screen-result').classList.remove('hidden');
 
+    const reviewTbody = document.getElementById('review-table-body');
+    reviewTbody.innerHTML = "";
+
+    let correctCount = 0;
+    const totalSoal = questionsData.length;
+
+    questionsData.forEach((q, index) => {
+        const zone = document.getElementById(`zone-${q.id}`);
+        let userAnsText = "Tidak diisi";
+        let isCorrect = false;
+
+        if (zone && zone.children.length > 0) {
+            const card = zone.children[0];
+            userAnsText = card.dataset.fullName;
+            if (card.dataset.genus === q.targetGenus) {
+                isCorrect = true;
+                correctCount++;
+            }
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td><strong>${q.label}</strong></td>
+            <td>${userAnsText}</td>
+            <td>
+                ${isCorrect 
+                    ? `<span class="status-correct">🟢 Benar (+10 poin)</span>` 
+                    : `<span class="status-wrong">🔴 Salah</span><br><small style="color:#475569;">Jawaban Benar: Takson ${q.targetGenus} (${q.name})</small>`
+                }
+            </td>
+        `;
+        reviewTbody.appendChild(tr);
+    });
+
+    // Poin per-soal: 10 poin per jawaban benar
+    const totalScore = correctCount * 10;
+
     const header = document.getElementById('result-header');
     const desc = document.getElementById('result-desc');
     const scoreBox = document.getElementById('final-score-box');
-    const btnNext = document.getElementById('btn-next-chapter');
 
-    if (isWin) {
-        header.innerText = "Selesai!";
+    if (correctCount === totalSoal) {
+        header.innerText = "Sempurna! Semuanya Benar 🎉";
         header.style.color = "var(--success)";
-        desc.innerText = `Kamu berhasil menyusun ${gameData[currentChapterIdx].chapterTitle} dengan tepat.`;
-        scoreBox.innerText = `Skor Akhir: ${score} Poin`;
+        desc.innerText = "Kamu berhasil menyusun seluruh cabang filogeni dengan tepat!";
     } else {
-        header.innerText = "Gagal Menyelesaikan Chapter";
-        header.style.color = "var(--danger)";
-        desc.innerText = "Nyawa habis. Pelajari kembali materi taksonomi dan coba lagi.";
-        scoreBox.innerText = `Skor Akhir: 0 Poin`;
+        header.innerText = "Evaluasi Hasil Jawaban";
+        header.style.color = "var(--primary)";
+        desc.innerText = `Kamu menjawab ${correctCount} benar dari ${totalSoal} soal. Pelajari kunci jawaban di bawah ini:`;
     }
 
-    if (isWin && currentChapterIdx < gameData.length - 1) {
-        btnNext.classList.remove('hidden');
-    } else {
-        btnNext.classList.add('hidden');
-    }
-}
-
-function nextChapter() {
-    if (currentChapterIdx < gameData.length - 1) {
-        startChapter(currentChapterIdx + 1);
-    }
+    scoreBox.innerHTML = `Total Skor: <span style="color:var(--primary);">${totalScore} Poin</span> (${correctCount}/${totalSoal} Soal Benar x 10 Poin)`;
 }
 </script>
 </body>
