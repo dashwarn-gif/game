@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Pembelajaran Interaktif & Game Pohon Filogeni</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #cbd5e1;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --selected: #f59e0b;
+            --danger: #dc2626;
+            --success: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        header {
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 12px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* Menu Utama */
+        .menu-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .menu-card {
+            border: 1.5px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            background: #ffffff;
+        }
+
+        .menu-card:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .menu-card h3 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+            color: var(--primary);
+        }
+
+        .menu-card p {
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .menu-card.materi-card {
+            border-color: #059669;
+        }
+        .menu-card.materi-card h3 {
+            color: #059669;
+        }
+        .menu-card.materi-card:hover {
+            background: #ecfdf5;
+        }
+
+        /* Layout Materi */
+        .materi-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .materi-section {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .materi-section h2 {
+            font-size: 1.05rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+        }
+
+        .materi-section ul {
+            margin-left: 20px;
+            margin-top: 6px;
+        }
+
+        .materi-section li {
+            margin-bottom: 4px;
+        }
+
+        .materi-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .materi-table th, .materi-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: left;
+        }
+
+        .materi-table th {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* Stats & Game Board */
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f1f5f9;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .timer-bar-container {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: var(--primary);
+            transition: width 1s linear;
+        }
+
+        .instruction-box {
+            background: #eff6ff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid #bfdbfe;
+            font-size: 0.85rem;
+            color: #1e40af;
+            line-height: 1.4;
+        }
+
+        .phylo-board {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #ffffff;
+            padding: 14px;
+            border-radius: 6px;
+            border: 1.5px solid var(--border-color);
+        }
+
+        .tree-node-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 640px) {
+            .tree-node-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        .node-info {
+            flex: 1;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .node-info strong {
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+
+        .drop-zone {
+            min-width: 240px;
+            min-height: 48px;
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            background: #ffffff;
+            transition: all 0.2s;
+            padding: 6px;
+            cursor: pointer;
+        }
+
+        .drop-zone.active-target {
+            border-color: var(--selected);
+            background: #fffbeb;
+        }
+
+        .drop-zone.filled {
+            border-style: solid;
+            border-color: var(--primary);
+            background: #ffffff;
+        }
+
+        .cards-dock {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: #f1f5f9;
+            padding: 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            min-height: 80px;
+        }
+
+        .draggable-card {
+            background: #ffffff;
+            border: 1.5px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            transition: transform 0.1s, border-color 0.1s;
+        }
+
+        .draggable-card:hover {
+            border-color: var(--primary-hover);
+        }
+
+        .draggable-card.selected-card {
+            border: 2px solid var(--selected);
+            background: #fef3c7;
+            color: #b45309;
+            transform: scale(1.03);
+        }
+
+        .draggable-card.dragging {
+            opacity: 0.4;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 18px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-outline { background: white; border: 1.5px solid var(--border-color); color: var(--text-color); }
+        .btn-outline:hover { background: #f1f5f9; }
+
+        .hidden { display: none !important; }
+
+        .shake { animation: shake 0.4s ease-in-out; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-container">
+    <header>
+        <h1>Media Belajar & Game Pohon Filogeni</h1>
+        <p class="subtitle">Modul Pembelajaran Praktis Taksonomi & Hubungan Kekerabatan Makhluk Hidup</p>
+    </header>
+
+    <!-- Menu Utama -->
+    <div id="screen-home">
+        <p style="margin-bottom: 12px; font-size: 0.9rem; line-height: 1.5;">
+            Pilih modul materi di bawah untuk mempelajari dasar-dasar filogeni, atau pilih chapter game untuk latihan menyusun pohon kekerabatan secara interaktif.
+        </p>
+        
+        <div class="menu-grid">
+            <div class="menu-card materi-card" onclick="showMateri()">
+                <h3>📖 Modul Materi Pembelajaran Lengkap</h3>
+                <p>Penjelasan lengkap konsep Pohon Filogeni, Aturan Penulisan Nama Ilmiah, serta Matriks Ciri Famili Felidae & Cercopithecidae.</p>
+            </div>
+
+            <div class="menu-card" onclick="startChapter(0)">
+                <h3>Chapter 1: Famili Felidae (Kucing-kucingan)</h3>
+                <p>Menyusun percabangan genus <em>Leopardus</em>, <em>Acinonyx</em>, <em>Panthera</em>, dan <em>Prionailurus</em>.</p>
+            </div>
+
+            <div class="menu-card" onclick="startChapter(1)">
+                <h3>Chapter 2: Famili Cercopithecidae (Monyet Dunia Lama)</h3>
+                <p>Menyusun percabangan kelompok Kera (<em>Macaca</em>), Babon (<em>Papio</em>), Lutung (<em>Trachypithecus</em>), Monyet (<em>Colobinae</em>), dan Surili (<em>Presbytini</em>).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modul Materi -->
+    <div id="screen-materi" class="hidden">
+        <div class="materi-content">
+            <div class="materi-section">
+                <h2>1. Konsep Dasar Pohon Filogeni</h2>
+                <p><strong>Pohon Filogeni</strong> adalah diagram yang menggambarkan pola hubungan kekerabatan evolusioner antara berbagai spesies makhluk hidup berdasarkan persamaan dan perbedaan ciri fisik (morfologi) maupun materi genetik (DNA/RNA).</p>
+                <ul>
+                    <li><strong>Garis Keturunan (Branch):</strong> Menunjukkan alur perubahan evolusi spesies dari waktu ke waktu.</li>
+                    <li><strong>Titik Percabangan (Node):</strong> Menunjukkan nenek moyang bersama (common ancestor) tempat dua atau lebih garis keturunan berpisah.</li>
+                    <li><strong>Kedekatan Kekerabatan:</strong> Spesies yang berada dalam satu percabangan genus yang sama memiliki hubungan kekerabatan yang jauh lebih dekat dibandingkan spesies dari genus yang berbeda.</li>
+                </ul>
+            </div>
+
+            <div class="materi-section">
+                <h2>2. Aturan Tata Nama Binomial Nomenclature</h2>
+                <p>Sistem tata nama ganda ciptaan Carolus Linnaeus yang digunakan secara internasional:</p>
+                <ul>
+                    <li>Terdiri dari dua kata bahasa Latin. Kata pertama adalah <strong>Genus</strong> (huruf pertama KAPITAL), kata kedua adalah <strong>Spesies</strong> (semua huruf kecil).</li>
+                    <li>Ditulis miring (<em>italic</em>) pada cetakan komputer, atau digarisbawahi terpisah pada tulisan tangan.</li>
+                    <li><em>Contoh:</em> <em>Panthera tigris</em> (Harimau) &rarr; Genus: <em>Panthera</em>, Spesies: <em>tigris</em>.</li>
+                </ul>
+            </div>
+
+            <div class="materi-section">
+                <h2>3. Klasifikasi Famili Felidae (Chapter 1)</h2>
+                <p>Berdasarkan catatan papan tulis, Famili Felidae terbagi menjadi beberapa genus utama:</p>
+                <table class="materi-table">
+                    <thead>
+                        <tr>
+                            <th>Genus</th>
+                            <th>Anggota Spesies & Nama Lokal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Leopardus</strong></td>
+                            <td><em>Leopardus pardalis</em> (Kucing tutul kecil)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Acinonyx</strong></td>
+                            <td><em>Acinonyx jubatus</em> (Cheetah), <em>Acinonyx intermedius</em> (Cheetah purba)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Panthera</strong></td>
+                            <td><em>Panthera tigris</em> (Harimau), <em>Panthera leo</em> (Singa), <em>Panthera onca</em> (Jaguar), <em>Panthera pardus</em> (Macan tutul), <em>Panthera uncia</em> (Macan tutul salju)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Prionailurus</strong></td>
+                            <td><em>Prionailurus bengalensis</em> (Kucing bengal), <em>Prionailurus planiceps</em> (Kucing tandang)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="materi-section">
+                <h2>4. Klasifikasi Famili Cercopithecidae (Chapter 2)</h2>
+                <p>Famili Cercopithecidae terbagi menjadi beberapa kelompok percabangan taksonomi:</p>
+                <table class="materi-table">
+                    <thead>
+                        <tr>
+                            <th>Kelompok / Genus</th>
+                            <th>Anggota Spesies & Sebutan Kelompok</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Macaca</strong> (Kera)</td>
+                            <td><em>Macaca fuscata</em>, <em>Macaca fascicularis</em>, <em>Macaca nemestrina</em> (Beruk), <em>Macaca thibetana</em>, <em>Macaca munzala</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Papio</strong> (Babon)</td>
+                            <td><em>Papio hamadryas</em>, <em>Papio anubis</em>, <em>Papio kindae</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Trachypithecus</strong> (Lutung)</td>
+                            <td><em>Trachypithecus germaini</em>, <em>Trachypithecus phayrei</em>, <em>Trachypithecus obscurus</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sub-famili Colobinae</strong> (Monyet)</td>
+                            <td><em>Simia badius</em>, <em>Simia polycomos</em>, <em>Simia nemaeus</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Presbytini</strong> (Surili)</td>
+                            <td><em>Presbytis mitrata</em> (Surili)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <button class="btn btn-outline" style="margin-top: 14px;" onclick="showHome()">⬅ Kembali ke Menu Utama</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="screen-game" class="hidden">
+        <div class="stats-bar">
+            <div><span class="badge" id="hud-chapter-title">Chapter 1</span></div>
+            <div>Nyawa: <span id="hud-hearts">3</span></div>
+            <div>Waktu: <span id="hud-timer" style="color: var(--primary);">40</span>s</div>
+        </div>
+
+        <div class="timer-bar-container">
+            <div class="timer-bar" id="timer-bar"></div>
+        </div>
+
+        <div class="instruction-box" id="game-instruction">
+            💡 <strong>Cara Bermain:</strong> Klik/Ketuk kartu spesies di bawah hingga berwarna kuning, lalu klik/ketuk kotak cabang yang sesuai. (Bisa juga diseret/drag).
+        </div>
+
+        <!-- Dynamic Phylo Board -->
+        <div class="phylo-board" id="phylo-board"></div>
+
+        <!-- Cards Dock Area -->
+        <div class="cards-dock" id="cards-dock"></div>
+
+        <button class="btn btn-primary" onclick="submitAssembly()">Kunci Jawaban ➔</button>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="screen-result" class="hidden" style="text-align: center; padding: 20px 0;">
+        <h2 id="result-header" style="margin-bottom: 10px; color: var(--primary);">Chapter Selesai</h2>
+        <p id="result-desc" style="font-size: 0.95rem; color: #475569; margin-bottom: 15px;"></p>
+        <div id="final-score-box" style="font-size: 1.15rem; font-weight: bold; margin-bottom: 18px; padding: 12px; background: #f1f5f9; border-radius: 6px;"></div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-outline" onclick="showHome()">Menu Utama</button>
+            <button class="btn btn-primary" id="btn-next-chapter" onclick="nextChapter()">Chapter Selanjutnya ➔</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const gameData = [
+    {
+        chapterTitle: "Chapter 1: Famili Felidae",
+        timeLimit: 45,
+        nodes: [
+            { id: "node-1", target: "Leopardus", label: "Genus Leopardus", trait: "Spesies: Leopardus pardalis (Kucing tutul kecil)" },
+            { id: "node-2", target: "Acinonyx", label: "Genus Acinonyx", trait: "Spesies: Acinonyx jubatus & Acinonyx intermedius" },
+            { id: "node-3", target: "Panthera", label: "Genus Panthera", trait: "Spesies: Harimau, Singa, Jaguar, Macan tutul" },
+            { id: "node-4", target: "Prionailurus", label: "Genus Prionailurus", trait: "Spesies: Prionailurus bengalensis & P. planiceps" }
+        ],
+        cards: [
+            { id: "c1", name: "Leopardus pardalis (Kucing tutul kecil)", genus: "Leopardus" },
+            { id: "c2", name: "Acinonyx jubatus (Cheetah)", genus: "Acinonyx" },
+            { id: "c3", name: "Panthera tigris (Harimau)", genus: "Panthera" },
+            { id: "c4", name: "Prionailurus planiceps (Kucing tandang)", genus: "Prionailurus" }
+        ]
+    },
+    {
+        chapterTitle: "Chapter 2: Famili Cercopithecidae",
+        timeLimit: 50,
+        nodes: [
+            { id: "node-1", target: "Macaca", label: "Genus Macaca (Kera)", trait: "Spesies: M. fuscata, M. fascicularis, M. nemestrina" },
+            { id: "node-2", target: "Papio", label: "Genus Papio (Babon)", trait: "Spesies: P. hamadryas, P. anubis, P. kindae" },
+            { id: "node-3", target: "Trachypithecus", label: "Genus Trachypithecus (Lutung)", trait: "Spesies: T. germaini, T. phayrei, T. obscurus" },
+            { id: "node-4", target: "Colobinae", label: "Sub-famili Colobinae (Monyet)", trait: "Spesies: Simia badius, Simia polycomos" },
+            { id: "node-5", target: "Presbytini", label: "Kelompok Presbytini (Surili)", trait: "Spesies: Presbytis mitrata (Surili)" }
+        ],
+        cards: [
+            { id: "c5", name: "Macaca nemestrina (Beruk)", genus: "Macaca" },
+            { id: "c6", name: "Papio anubis (Babon)", genus: "Papio" },
+            { id: "c7", name: "Trachypithecus obscurus (Lutung)", genus: "Trachypithecus" },
+            { id: "c8", name: "Simia polycomos (Monyet)", genus: "Colobinae" },
+            { id: "c9", name: "Presbytis mitrata (Surili)", genus: "Presbytini" }
+        ]
+    }
+];
+
+let currentChapterIdx = 0;
+let lives = 3;
+let timer = 0;
+let timerInterval = null;
+let score = 0;
+let selectedCardEl = null;
+let draggedCard = null;
+
+function showHome() {
+    clearInterval(timerInterval);
+    document.getElementById('screen-home').classList.remove('hidden');
+    document.getElementById('screen-materi').classList.add('hidden');
+    document.getElementById('screen-game').classList.add('hidden');
+    document.getElementById('screen-result').classList.add('hidden');
+}
+
+function showMateri() {
+    document.getElementById('screen-home').classList.add('hidden');
+    document.getElementById('screen-materi').classList.remove('hidden');
+}
+
+function startChapter(idx) {
+    currentChapterIdx = idx;
+    lives = 3;
+    score = 0;
+    selectedCardEl = null;
+    document.getElementById('screen-home').classList.add('hidden');
+    document.getElementById('screen-result').classList.add('hidden');
+    document.getElementById('screen-game').classList.remove('hidden');
+    loadStage();
+}
+
+function updateHUD() {
+    document.getElementById('hud-hearts').innerText = lives;
+    document.getElementById('hud-chapter-title').innerText = gameData[currentChapterIdx].chapterTitle;
+}
+
+function loadStage() {
+    updateHUD();
+    selectedCardEl = null;
+    const chapter = gameData[currentChapterIdx];
+    
+    // Render Board
+    const board = document.getElementById('phylo-board');
+    board.innerHTML = "";
+    chapter.nodes.forEach(node => {
+        const row = document.createElement('div');
+        row.className = 'tree-node-row';
+        row.innerHTML = `
+            <div class="node-info">
+                <strong>${node.label}</strong><br>
+                <span>${node.trait}</span>
+            </div>
+        `;
+        
+        const dropZone = document.createElement('div');
+        dropZone.className = 'drop-zone';
+        dropZone.dataset.target = node.target;
+        dropZone.id = node.id;
+        dropZone.innerText = "Ketuk untuk menempatkan kartu";
+        
+        // Touch / Click event for DropZone
+        dropZone.addEventListener('click', () => handleZoneClick(dropZone));
+        
+        // Native Drag events
+        dropZone.addEventListener('dragover', (e) => e.preventDefault());
+        dropZone.addEventListener('drop', (e) => handleDrop(e, dropZone));
+
+        row.appendChild(dropZone);
+        board.appendChild(row);
+    });
+
+    // Render Cards
+    const dock = document.getElementById('cards-dock');
+    dock.innerHTML = "";
+    const shuffledCards = [...chapter.cards].sort(() => Math.random() - 0.5);
+    
+    shuffledCards.forEach(card => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'draggable-card';
+        cardEl.draggable = true;
+        cardEl.innerText = card.name;
+        cardEl.dataset.genus = card.genus;
+        cardEl.dataset.id = card.id;
+        
+        // Touch / Click Select
+        cardEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleCardClick(cardEl);
+        });
+
+        // Drag events
+        cardEl.addEventListener('dragstart', () => {
+            draggedCard = cardEl;
+            cardEl.classList.add('dragging');
+        });
+        cardEl.addEventListener('dragend', () => {
+            cardEl.classList.remove('dragging');
+            draggedCard = null;
+        });
+
+        dock.appendChild(cardEl);
+    });
+
+    startTimer(chapter.timeLimit);
+}
+
+function handleCardClick(cardEl) {
+    // If card is inside a drop zone, clicking it returns it to dock
+    if (cardEl.parentElement.classList.contains('drop-zone')) {
+        const zone = cardEl.parentElement;
+        document.getElementById('cards-dock').appendChild(cardEl);
+        zone.classList.remove('filled');
+        zone.innerText = "Ketuk untuk menempatkan kartu";
+        if (selectedCardEl === cardEl) {
+            cardEl.classList.remove('selected-card');
+            selectedCardEl = null;
+        }
+        return;
+    }
+
+    // Toggle Selection
+    if (selectedCardEl === cardEl) {
+        cardEl.classList.remove('selected-card');
+        selectedCardEl = null;
+    } else {
+        if (selectedCardEl) selectedCardEl.classList.remove('selected-card');
+        selectedCardEl = cardEl;
+        cardEl.classList.add('selected-card');
+    }
+}
+
+function handleZoneClick(zone) {
+    if (!selectedCardEl) return;
+
+    // If zone already has a card, return old card to dock
+    if (zone.children.length > 0) {
+        document.getElementById('cards-dock').appendChild(zone.children[0]);
+    }
+
+    // Place selected card into zone
+    zone.innerText = "";
+    zone.appendChild(selectedCardEl);
+    zone.classList.add('filled');
+
+    selectedCardEl.classList.remove('selected-card');
+    selectedCardEl = null;
+}
+
+function handleDrop(e, zone) {
+    e.preventDefault();
+    if (!draggedCard) return;
+
+    if (zone.children.length > 0) {
+        document.getElementById('cards-dock').appendChild(zone.children[0]);
+    }
+
+    zone.innerText = "";
+    zone.appendChild(draggedCard);
+    zone.classList.add('filled');
+}
+
+function startTimer(seconds) {
+    clearInterval(timerInterval);
+    timer = seconds;
+    const timerTxt = document.getElementById('hud-timer');
+    const timerBar = document.getElementById('timer-bar');
+    
+    timerTxt.innerText = timer;
+    timerBar.style.width = '100%';
+
+    timerInterval = setInterval(() => {
+        timer--;
+        timerTxt.innerText = timer;
+        const pct = (timer / seconds) * 100;
+        timerBar.style.width = `${pct}%`;
+
+        if (timer <= 0) {
+            clearInterval(timerInterval);
+            handlePenalty("Waktu habis!");
+        }
+    }, 1000);
+}
+
+function handlePenalty(reason) {
+    lives--;
+    updateHUD();
+    const container = document.getElementById('main-container');
+    container.classList.add('shake');
+    setTimeout(() => container.classList.remove('shake'), 400);
+
+    if (lives <= 0) {
+        endGame(false);
+    } else {
+        alert(`${reason} Nyawa berkurang! Silakan susun ulang.`);
+        loadStage();
+    }
+}
+
+function submitAssembly() {
+    const chapter = gameData[currentChapterIdx];
+    let correctCount = 0;
+    let allFilled = true;
+
+    chapter.nodes.forEach(node => {
+        const zone = document.getElementById(node.id);
+        if (zone.children.length === 0) {
+            allFilled = false;
+        } else {
+            const cardGenus = zone.children[0].dataset.genus;
+            if (cardGenus === zone.dataset.target) {
+                correctCount++;
+            }
+        }
+    });
+
+    if (!allFilled) {
+        alert("Lengkapi semua cabang takson terlebih dahulu!");
+        return;
+    }
+
+    clearInterval(timerInterval);
+
+    if (correctCount === chapter.nodes.length) {
+        score = 50 + (timer * 2);
+        endGame(true);
+    } else {
+        handlePenalty("Susunan cabang pohon belum tepat.");
+    }
+}
+
+function endGame(isWin) {
+    clearInterval(timerInterval);
+    document.getElementById('screen-game').classList.add('hidden');
+    document.getElementById('screen-result').classList.remove('hidden');
+
+    const header = document.getElementById('result-header');
+    const desc = document.getElementById('result-desc');
+    const scoreBox = document.getElementById('final-score-box');
+    const btnNext = document.getElementById('btn-next-chapter');
+
+    if (isWin) {
+        header.innerText = "Selesai!";
+        header.style.color = "var(--success)";
+        desc.innerText = `Kamu berhasil menyusun ${gameData[currentChapterIdx].chapterTitle} dengan tepat.`;
+        scoreBox.innerText = `Skor Akhir: ${score} Poin`;
+    } else {
+        header.innerText = "Gagal Menyelesaikan Chapter";
+        header.style.color = "var(--danger)";
+        desc.innerText = "Nyawa habis. Pelajari kembali materi taksonomi dan coba lagi.";
+        scoreBox.innerText = `Skor Akhir: 0 Poin`;
+    }
+
+    if (isWin && currentChapterIdx < gameData.length - 1) {
+        btnNext.classList.remove('hidden');
+    } else {
+        btnNext.classList.add('hidden');
+    }
+}
+
+function nextChapter() {
+    if (currentChapterIdx < gameData.length - 1) {
+        startChapter(currentChapterIdx + 1);
+    }
+}
+</script>
+</body>
+</html>
