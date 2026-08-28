@@ -22,6 +22,7 @@
             margin: 0;
             padding: 0;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -35,6 +36,516 @@
             min-height: 100vh;
         }
 
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        header {
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.35rem;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* Menu Utama & Card Button Fix */
+        .menu-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        button.menu-card {
+            display: block;
+            width: 100%;
+            text-align: left;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #ffffff;
+            font-family: inherit;
+            outline: none;
+        }
+
+        button.menu-card:hover, button.menu-card:active {
+            border-color: var(--primary);
+            background: #eff6ff;
+            transform: translateY(-1px);
+        }
+
+        button.menu-card h3 {
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+            color: var(--primary);
+            pointer-events: none;
+        }
+
+        button.menu-card p {
+            font-size: 0.85rem;
+            color: #475569;
+            pointer-events: none;
+        }
+
+        button.menu-card.materi-card {
+            border-color: #059669;
+        }
+        button.menu-card.materi-card h3 {
+            color: #059669;
+        }
+        button.menu-card.materi-card:hover {
+            background: #ecfdf5;
+        }
+
+        /* Materi View */
+        .materi-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .materi-section {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 14px;
+        }
+
+        .materi-section h2 {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .materi-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.82rem;
+        }
+
+        .materi-table th, .materi-table td {
+            border: 1px solid var(--border-color);
+            padding: 6px 8px;
+            text-align: left;
+        }
+
+        .materi-table th { background: #e2e8f0; }
+
+        /* HUD Quiz */
+        .hud-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f1f5f9;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.78rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Card Soal (Per Halaman) */
+        .question-card {
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .question-text {
+            font-size: 0.98rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: #0f172a;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-size: 0.88rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .option-btn.selected-correct {
+            border-color: var(--success) !important;
+            background: #f0fdf4 !important;
+            color: #15803d !important;
+            font-weight: bold;
+        }
+
+        .option-btn.selected-wrong {
+            border-color: var(--danger) !important;
+            background: #fef2f2 !important;
+            color: #b91c1c !important;
+            font-weight: bold;
+        }
+
+        .option-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+
+        .feedback-alert {
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-correct {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .feedback-wrong {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+
+        /* Review Table */
+        .review-container {
+            max-height: 340px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .review-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            text-align: left;
+        }
+
+        .review-table th, .review-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .review-table th {
+            background: #f1f5f9;
+            position: sticky;
+            top: 0;
+            color: #0f172a;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 18px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-outline { background: white; border: 1.5px solid var(--border-color); color: var(--text-color); }
+        .btn-outline:hover { background: #f1f5f9; }
+
+        .hidden { display: none !important; }
+
+        .shake { animation: shake 0.4s ease-in-out; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-container">
+    <header>
+        <h1>Ujian Pilihan Ganda Pohon Filogeni</h1>
+        <p class="subtitle">Evaluasi Taksonomi & Hubungan Kekerabatan Makhluk Hidup</p>
+    </header>
+
+    <!-- Menu Utama -->
+    <div id="screen-home">
+        <p style="margin-bottom: 12px; font-size: 0.9rem; line-height: 1.5;">
+            Pilih chapter di bawah ini untuk memulai tes pilihan ganda (11 Halaman Soal per Chapter).
+        </p>
+
+        <div class="menu-grid">
+            <button type="button" class="menu-card materi-card" id="btn-materi">
+                <h3>📖 Modul Pembelajaran Lengkap</h3>
+                <p>Pelajari ringkasan materi Pohon Filogeni, Binomial Nomenclature, serta taksonomi Felidae & Cercopithecidae.</p>
+            </button>
+
+            <button type="button" class="menu-card" id="btn-ch1">
+                <h3>Chapter 1: Famili Felidae (Kucing-kucingan)</h3>
+                <p>11 Soal Pilihan Ganda &bull; Max 3 Nyawa &bull; Genus <em>Leopardus</em>, <em>Acinonyx</em>, <em>Panthera</em>, dan <em>Prionailurus</em>.</p>
+            </button>
+
+            <button type="button" class="menu-card" id="btn-ch2">
+                <h3>Chapter 2: Famili Cercopithecidae (Primata)</h3>
+                <p>11 Soal Pilihan Ganda &bull; Max 3 Nyawa &bull; Takson <em>Macaca</em>, <em>Papio</em>, <em>Trachypithecus</em>, <em>Colobinae</em>, dan <em>Presbytini</em>.</p>
+            </button>
+        </div>
+    </div>
+
+    <!-- Screen Materi -->
+    <div id="screen-materi" class="hidden">
+        <div class="materi-content">
+            <div class="materi-section">
+                <h2>1. Konsep Dasar Pohon Filogeni</h2>
+                <p>Pohon Filogeni mengelompokkan makhluk hidup berdasarkan garis keturunan evolusioner. Titik percabangan (node) menandakan <em>common ancestor</em> (nenek moyang bersama). Spesies yang berbagi percabangan genus yang sama memiliki kekerabatan paling dekat.</p>
+            </div>
+
+            <div class="materi-section">
+                <h2>2. Aturan Binomial Nomenclature</h2>
+                <p>Sistem 2 kata ciptaan Linnaeus: Kata ke-1 = Genus (Huruf awal KAPITAL), Kata ke-2 = Epitheton Specificum/Spesies (huruf kecil). Ditulis <em>italic</em> atau digarisbawahi terpisah.</p>
+            </div>
+
+            <div class="materi-section">
+                <h2>3. Rangkuman Materi Chapter 1 (Felidae)</h2>
+                <table class="materi-table">
+                    <thead>
+                        <tr><th>Genus</th><th>Spesies & Nama Lokal</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><em>Leopardus</em></td><td><em>Leopardus pardalis</em> (Kucing tutul kecil)</td></tr>
+                        <tr><td><em>Acinonyx</em></td><td><em>Acinonyx jubatus</em> (Cheetah), <em>Acinonyx intermedius</em> (Cheetah purba)</td></tr>
+                        <tr><td><em>Panthera</em></td><td><em>Panthera tigris</em> (Harimau), <em>P. leo</em> (Singa), <em>P. onca</em> (Jaguar), <em>P. pardus</em> (Macan tutul), <em>P. uncia</em> (Macan tutul salju)</td></tr>
+                        <tr><td><em>Prionailurus</em></td><td><em>Prionailurus bengalensis</em> (Kucing bengal), <em>P. planiceps</em> (Kucing tandang)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="materi-section">
+                <h2>4. Rangkuman Materi Chapter 2 (Cercopithecidae)</h2>
+                <table class="materi-table">
+                    <thead>
+                        <tr><th>Takson/Genus</th><th>Spesies & Nama Kelompok</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><em>Macaca</em> (Kera)</td><td><em>Macaca nemestrina</em> (Beruk), <em>M. fascicularis</em>, <em>M. fuscata</em>, <em>M. thibetana</em>, <em>M. munzala</em></td></tr>
+                        <tr><td><em>Papio</em> (Babon)</td><td><em>Papio anubis</em>, <em>Papio hamadryas</em>, <em>Papio kindae</em></td></tr>
+                        <tr><td><em>Trachypithecus</em> (Lutung)</td><td><em>Trachypithecus obscurus</em>, <em>T. germaini</em>, <em>T. phayrei</em></td></tr>
+                        <tr><td>Sub-famili Colobinae</td><td><em>Simia polycomos</em>, <em>Simia nemaeus</em>, <em>Simia badius</em></td></tr>
+                        <tr><td>Presbytini (Surili)</td><td><em>Presbytis mitrata</em> (Surili)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <button type="button" class="btn btn-outline" style="margin-top: 14px;" id="btn-back-materi">⬅ Kembali ke Menu Utama</button>
+    </div>
+
+    <!-- Screen Quiz (1 Soal Per Halaman) -->
+    <div id="screen-quiz" class="hidden">
+        <div class="hud-bar">
+            <div><span class="badge" id="hud-chapter-title">Chapter 1</span></div>
+            <div>Halaman: <span id="hud-page" style="color: var(--primary);">1 / 11</span></div>
+            <div>Nyawa: <span id="hud-hearts" style="color: var(--danger);">❤️ ❤️ ❤️</span></div>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <!-- Card Soal Halaman Ini -->
+        <div class="question-card">
+            <div class="question-text" id="question-text">Memuat Soal...</div>
+            <div class="options-grid" id="options-container"></div>
+            <div id="feedback-container"></div>
+        </div>
+
+        <button type="button" class="btn btn-primary hidden" id="btn-next-page">Halaman Selanjutnya ➔</button>
+    </div>
+
+    <!-- Screen Result & Review -->
+    <div id="screen-result" class="hidden" style="text-align: center;">
+        <h2 id="result-header">Ujian Selesai</h2>
+        <p id="result-desc" style="font-size: 0.9rem; color: #475569; margin-top: 4px;"></p>
+        
+        <div id="final-score-box" style="font-size: 1.15rem; font-weight: bold; padding: 12px; background: #f1f5f9; border-radius: 8px; margin: 12px 0;"></div>
+
+        <h3 style="text-align: left; font-size: 0.95rem; color: #334155; margin-bottom: 6px;">Review & Pembahasan Kunci Jawaban (11 Soal):</h3>
+        
+        <div class="review-container">
+            <table class="review-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Pertanyaan</th>
+                        <th>Jawaban Kamu</th>
+                        <th>Status & Kunci Jawaban</th>
+                    </tr>
+                </thead>
+                <tbody id="review-table-body"></tbody>
+            </table>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 16px;">
+            <button type="button" class="btn btn-outline" id="btn-result-home">Menu Utama</button>
+            <button type="button" class="btn btn-primary" id="btn-result-retry">Ulangi Chapter 🔄</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Dataset 11 Soal Lengkap per Chapter (Mencakup Semua Spesies Materi)
+const chapterData = [
+    {
+        title: "Chapter 1: Famili Felidae",
+        questions: [
+            {
+                q: "1. Pada konstruksi pohon filogeni kelompok Felidae, titik percabangan utama (node) paling dasar mewakili...",
+                options: [
+                    "A. Perubahan warna rambut spesies secara mendadak",
+                    "B. Nenek moyang bersama (common ancestor) seluruh takson felidae",
+                    "C. Genus Panthera yang paling modern",
+                    "D. Spesies Leopardus pardalis yang sudah punah"
+                ],
+                correct: 1,
+                explain: "Node dasar pada pohon filogeni menggambarkan garis evolusi dari nenek moyang bersama seluruh takson dalam famili tersebut."
+            },
+            {
+                q: "2. Spesies Leopardus pardalis secara lokal dikenal sebagai Kucing tutul kecil. Berdasarkan hirarki taksonomi, kata 'Leopardus' menunjukkan...",
+                options: [
+                    "A. Nama penunjuk spesies",
+                    "B. Tingkat Famili",
+                    "C. Tingkat Genus",
+                    "D. Kategori Sub-spesies"
+                ],
+                correct: 2,
+                explain: "Kata pertama dalam tata nama Binomial Nomenclature menunjukkan tingkat takson Genus."
+            },
+            {
+                q: "3. Manakah pasangan spesies yang berada dalam satu takson percabangan genus Acinonyx pada filogeni Felidae?",
+                options: [
+                    "A. Acinonyx jubatus dan Acinonyx intermedius",
+                    "B. Acinonyx jubatus dan Panthera tigris",
+                    "C. Acinonyx intermedius dan Leopardus pardalis",
+                    "D. Acinonyx jubatus dan Prionailurus planiceps"
+                ],
+                correct: 0,
+                explain: "Acinonyx jubatus (Cheetah) dan Acinonyx intermedius (Cheetah purba) berada dalam genus Acinonyx yang sama."
+            },
+            {
+                q: "4. Di antara hewan felidae berikut, manakah spesies yang TIDAK termasuk dalam percabangan genus Panthera?",
+                options: [
+                    "A. Panthera onca (Jaguar)",
+                    "B. Panthera uncia (Macan tutul salju)",
+                    "C. Prionailurus bengalensis (Kucing bengal)",
+                    "D. Panthera pardus (Macan tutul)"
+                ],
+                correct: 2,
+                explain: "Prionailurus bengalensis tergolong dalam genus Prionailurus, bukan Panthera."
+            },
+            {
+                q: "5. Kucing tandang (Prionailurus planiceps) memiliki hubungan kekerabatan paling dekat di tingkat genus dengan...",
+                options: [
+                    "A. Panthera leo (Singa)",
+                    "B. Prionailurus bengalensis (Kucing bengal)",
+                    "C. Leopardus pardalis (Kucing tutul kecil)",
+                    "D. Acinonyx jubatus (Cheetah)"
+                ],
+                correct: 1,
+                explain: "Prionailurus planiceps berkerabat paling dekat dengan Prionailurus bengalensis karena berbagi genus yang sama."
+            },
+            {
+                q: "6. Manakah penulisan nama ilmiah Harimau yang paling tepat sesuai kaidah Binomial Nomenclature Linnaeus?",
+                options: [
+                    "A. panthera Tigris",
+                    "B. Panthera tigris",
+                    "C. Panthera Tigris",
+                    "D. PANTHERA tigris"
+                ],
+                correct: 1,
+                explain: "Sesuai aturan: Kata genus diawali kapital, kata spesies huruf kecil semua, dan ditulis miring (italic)."
+            },
+            {
+                q: "7. Singa (Panthera leo) dan Jaguar (Panthera onca) dikelompokkan dalam genus Panthera karena memiliki persamaan...",
+                options: [
+                    "A. Habitat di gurun salju saja",
+                    "B. Karakter morfologi dan garis keturunan evolusi dekat",
+                    "C. Ukuran tubuh yan
         .container {
             width: 100%;
             max-width: 800px;
