@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ujian Interaktif Pohon Filogeni & Taksonomi</title>
+    <title>Evolution Express — Game Filogeni Interaktif</title>
     <style>
         :root {
-            --bg-color: #f8fafc;
+            --bg-color: #f4f4f4;
             --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --border-color: #cbd5e1;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --warning: #f59e0b;
+            --border-color: #333333;
+            --text-main: #111111;
+            --text-sub: #666666;
+            --gray-light: #e0e0e0;
+            --gray-dark: #555555;
         }
 
         * {
@@ -26,904 +24,512 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: Arial, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 16px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            color: var(--text-main);
+            padding: 20px;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
             width: 100%;
-            max-width: 800px;
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            max-width: 900px;
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
 
         header {
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 12px;
             text-align: center;
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
         }
 
         h1 {
-            font-size: 1.35rem;
-            color: #0f172a;
-            margin-bottom: 4px;
+            font-size: 1.4rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
         }
 
-        .subtitle {
+        p.desc {
             font-size: 0.85rem;
-            color: #64748b;
+            color: var(--text-sub);
+            line-height: 1.3;
         }
 
-        /* Menu Utama & Card Button */
-        .menu-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        button.menu-card {
-            display: block;
-            width: 100%;
-            text-align: left;
-            border: 1.5px solid var(--border-color);
-            border-radius: 8px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background: #ffffff;
-            font-family: inherit;
-            outline: none;
-        }
-
-        button.menu-card:hover, button.menu-card:active {
-            border-color: var(--primary);
-            background: #eff6ff;
-            transform: translateY(-1px);
-        }
-
-        button.menu-card h3 {
-            font-size: 1.05rem;
-            margin-bottom: 4px;
-            color: var(--primary);
-            pointer-events: none;
-        }
-
-        button.menu-card p {
-            font-size: 0.85rem;
-            color: #475569;
-            pointer-events: none;
-        }
-
-        button.menu-card.materi-card {
-            border-color: #059669;
-        }
-        button.menu-card.materi-card h3 {
-            color: #059669;
-        }
-        button.menu-card.materi-card:hover {
-            background: #ecfdf5;
-        }
-
-        /* Materi View */
-        .materi-content {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #334155;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            max-height: 480px;
-            overflow-y: auto;
-            padding-right: 6px;
-        }
-
-        .materi-section {
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
+        /* Pool Kartu Hewan */
+        .pool-section {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
             border-radius: 6px;
             padding: 14px;
         }
 
-        .materi-section h2 {
-            font-size: 1rem;
-            color: var(--primary);
-            margin-bottom: 6px;
-        }
-
-        .materi-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 8px;
-            font-size: 0.82rem;
-        }
-
-        .materi-table th, .materi-table td {
-            border: 1px solid var(--border-color);
-            padding: 6px 8px;
-            text-align: left;
-        }
-
-        .materi-table th { background: #e2e8f0; }
-
-        /* HUD Quiz */
-        .hud-bar {
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-main);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #f1f5f9;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
         }
 
-        .badge {
-            background: var(--primary);
-            color: white;
-            padding: 4px 8px;
+        .animal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .animal-card {
+            background: #ffffff;
+            border: 2px solid var(--border-color);
             border-radius: 4px;
-            font-size: 0.78rem;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: var(--primary);
-            transition: width 0.3s ease;
-        }
-
-        /* Card Soal */
-        .question-card {
-            background: #ffffff;
-            border: 1.5px solid var(--border-color);
-            border-radius: 8px;
-            padding: 18px;
+            padding: 8px;
+            cursor: pointer;
             display: flex;
             flex-direction: column;
-            gap: 14px;
-        }
-
-        .question-text {
-            font-size: 0.98rem;
-            font-weight: 600;
-            line-height: 1.5;
-            color: #0f172a;
-        }
-
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .option-btn {
-            background: #ffffff;
-            border: 1.5px solid var(--border-color);
-            border-radius: 6px;
-            padding: 12px 14px;
-            font-size: 0.88rem;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: var(--text-color);
-            display: flex;
             align-items: center;
-            gap: 10px;
-            font-family: inherit;
-            width: 100%;
-        }
-
-        .option-btn:hover:not(:disabled) {
-            border-color: var(--primary);
-            background: #eff6ff;
-        }
-
-        .option-btn.selected-correct {
-            border-color: var(--success) !important;
-            background: #f0fdf4 !important;
-            color: #15803d !important;
-            font-weight: bold;
-        }
-
-        .option-btn.selected-wrong {
-            border-color: var(--danger) !important;
-            background: #fef2f2 !important;
-            color: #b91c1c !important;
-            font-weight: bold;
-        }
-
-        .option-btn:disabled, .option-btn.disabled {
-            cursor: not-allowed;
-            opacity: 0.85;
-            pointer-events: none;
-        }
-
-        .feedback-alert {
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .feedback-correct {
-            background: #dcfce7;
-            color: #15803d;
-            border: 1px solid #86efac;
-        }
-
-        .feedback-wrong {
-            background: #fee2e2;
-            color: #b91c1c;
-            border: 1px solid #fca5a5;
-        }
-
-        /* Review Table */
-        .review-container {
-            max-height: 340px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            margin-top: 10px;
-        }
-
-        .review-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.82rem;
-            text-align: left;
-        }
-
-        .review-table th, .review-table td {
-            padding: 8px 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .review-table th {
-            background: #f1f5f9;
-            position: sticky;
-            top: 0;
-            color: #0f172a;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 12px 18px;
-            border-radius: 6px;
-            border: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
+            gap: 2px;
             text-align: center;
-            width: 100%;
-            font-family: inherit;
         }
 
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); }
-        .btn-outline { background: white; border: 1.5px solid var(--border-color); color: var(--text-color); }
-        .btn-outline:hover { background: #f1f5f9; }
+        .animal-card:hover {
+            background: var(--gray-light);
+        }
 
-        .hidden { display: none !important; }
+        .animal-card.selected {
+            border-width: 3px;
+            background: #e2e2e2;
+        }
 
-        .shake { animation: shake 0.4s ease-in-out; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-6px); }
-            40%, 80% { transform: translateX(6px); }
+        .animal-card.placed {
+            opacity: 0.3;
+            pointer-events: none;
+            border-style: dashed;
+        }
+
+        .animal-emoji {
+            font-size: 1.8rem;
+        }
+
+        .animal-name {
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .animal-latin {
+            font-size: 0.7rem;
+            font-style: italic;
+            color: var(--text-sub);
+        }
+
+        /* Area Kereta & Gerbong */
+        .train-section {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 14px;
+            overflow-x: auto;
+        }
+
+        .train-container {
+            display: flex;
+            gap: 10px;
+            padding-bottom: 6px;
+            min-width: max-content;
+        }
+
+        .locomotive {
+            background: #333333;
+            color: #ffffff;
+            border-radius: 4px;
+            padding: 12px;
+            width: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .locomotive h3 {
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        .wagon {
+            background: #ffffff;
+            border: 2px dashed var(--border-color);
+            border-radius: 4px;
+            width: 160px;
+            min-height: 140px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .wagon:hover {
+            background: #f9f9f9;
+        }
+
+        .wagon-header {
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+        }
+
+        .wagon-title {
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .wagon-capacity {
+            font-size: 0.68rem;
+            color: var(--text-sub);
+        }
+
+        .wagon-slots {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex-grow: 1;
+        }
+
+        .placed-item {
+            background: var(--gray-light);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            padding: 4px 6px;
+            font-size: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Tombol pembatalan pilihan di dalam gerbong */
+        .btn-remove {
+            background: transparent;
+            border: none;
+            color: var(--gray-dark);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 0 4px;
+            line-height: 1;
+        }
+
+        .btn-remove:hover {
+            color: #ff0000;
+        }
+
+        /* Kontrol */
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 4px;
+            border: 2px solid var(--border-color);
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            background: #ffffff;
+        }
+
+        .btn:hover {
+            background: var(--gray-light);
+        }
+
+        .btn-run {
+            background: #333333;
+            color: #ffffff;
+        }
+
+        .btn-run:hover {
+            background: #000000;
+        }
+
+        /* Area Pohon Filogeni Hasil */
+        .tree-section {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tree-svg-container {
+            width: 100%;
+            max-width: 750px;
+            height: 380px;
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
 
-<div class="container" id="main-container">
+<div class="container">
     <header>
-        <h1>Ujian Pilihan Ganda Pohon Filogeni</h1>
-        <p class="subtitle">Evaluasi Taksonomi & Hubungan Kekerabatan Makhluk Hidup</p>
+        <h1>🚂 Evolution Express</h1>
+        <p class="desc">
+            Kelompokkan 10 hewan ke dalam gerbong takson yang sesuai. Setelah terisi, jalankan kereta untuk merakit <strong>Pohon Filogeni</strong>.
+        </p>
     </header>
 
-    <!-- Menu Utama -->
-    <div id="screen-home">
-        <p style="margin-bottom: 12px; font-size: 0.9rem; line-height: 1.5;">
-            Pilih chapter di bawah ini untuk memulai tes pilihan ganda (11 Halaman Soal per Chapter).
-        </p>
+    <div class="pool-section">
+        <div class="section-title">
+            <span>Pilih Hewan (Klik hewan, lalu klik gerbong tujuan)</span>
+            <span id="pool-counter" style="font-size:0.8rem; color:var(--text-sub);">Tersisa: 10 Hewan</span>
+        </div>
+        <div class="animal-grid" id="animal-pool"></div>
+    </div>
 
-        <div class="menu-grid">
-            <button type="button" class="menu-card materi-card" id="btn-materi">
-                <h3>📖 Modul Pembelajaran Lengkap</h3>
-                <p>Pelajari ringkasan materi Pohon Filogeni, Binomial Nomenclature, serta taksonomi Felidae & Cercopithecidae.</p>
-            </button>
-
-            <button type="button" class="menu-card" id="btn-ch1">
-                <h3>Chapter 1: Famili Felidae (Kucing-kucingan)</h3>
-                <p>11 Soal Pilihan Ganda &bull; Max 3 Nyawa &bull; Genus <em>Leopardus</em>, <em>Acinonyx</em>, <em>Panthera</em>, dan <em>Prionailurus</em>.</p>
-            </button>
-
-            <button type="button" class="menu-card" id="btn-ch2">
-                <h3>Chapter 2: Famili Cercopithecidae (Primata)</h3>
-                <p>11 Soal Pilihan Ganda &bull; Max 3 Nyawa &bull; Takson <em>Macaca</em>, <em>Papio</em>, <em>Trachypithecus</em>, <em>Colobinae</em>, dan <em>Presbytini</em>.</p>
-            </button>
+    <div class="train-section">
+        <div class="train-container" id="train-container">
+            <div class="locomotive" id="locomotive">
+                <span style="font-size: 2rem;">🚂</span>
+                <h3>EVO-EXPRESS</h3>
+                <span style="font-size:0.65rem; color:#ccc; margin-top:2px;">Stasiun Takson</span>
+            </div>
         </div>
     </div>
 
-    <!-- Screen Materi -->
-    <div id="screen-materi" class="hidden">
-        <div class="materi-content">
-            <div class="materi-section">
-                <h2>1. Konsep Dasar Pohon Filogeni</h2>
-                <p>Pohon Filogeni mengelompokkan makhluk hidup berdasarkan garis keturunan evolusioner. Titik percabangan (node) menandakan <em>common ancestor</em> (nenek moyang bersama). Spesies yang berbagi percabangan genus yang sama memiliki kekerabatan paling dekat.</p>
-            </div>
-
-            <div class="materi-section">
-                <h2>2. Aturan Binomial Nomenclature</h2>
-                <p>Sistem 2 kata ciptaan Linnaeus: Kata ke-1 = Genus (Huruf awal KAPITAL), Kata ke-2 = Epitheton Specificum/Spesies (huruf kecil). Ditulis <em>italic</em> atau digarisbawahi terpisah.</p>
-            </div>
-
-            <div class="materi-section">
-                <h2>3. Rangkuman Materi Chapter 1 (Felidae)</h2>
-                <table class="materi-table">
-                    <thead>
-                        <tr><th>Genus</th><th>Spesies & Nama Lokal</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><em>Leopardus</em></td><td><em>Leopardus pardalis</em> (Kucing tutul kecil)</td></tr>
-                        <tr><td><em>Acinonyx</em></td><td><em>Acinonyx jubatus</em> (Cheetah), <em>Acinonyx intermedius</em> (Cheetah purba)</td></tr>
-                        <tr><td><em>Panthera</em></td><td><em>Panthera tigris</em> (Harimau), <em>P. leo</em> (Singa), <em>P. onca</em> (Jaguar), <em>P. pardus</em> (Macan tutul), <em>P. uncia</em> (Macan tutul salju)</td></tr>
-                        <tr><td><em>Prionailurus</em></td><td><em>Prionailurus bengalensis</em> (Kucing bengal), <em>P. planiceps</em> (Kucing tandang)</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="materi-section">
-                <h2>4. Rangkuman Materi Chapter 2 (Cercopithecidae)</h2>
-                <table class="materi-table">
-                    <thead>
-                        <tr><th>Takson/Genus</th><th>Spesies & Nama Kelompok</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><em>Macaca</em> (Kera)</td><td><em>Macaca nemestrina</em> (Beruk), <em>M. fascicularis</em>, <em>M. fuscata</em>, <em>M. thibetana</em>, <em>M. munzala</em></td></tr>
-                        <tr><td><em>Papio</em> (Babon)</td><td><em>Papio anubis</em>, <em>Papio hamadryas</em>, <em>Papio kindae</em></td></tr>
-                        <tr><td><em>Trachypithecus</em> (Lutung)</td><td><em>Trachypithecus obscurus</em>, <em>T. germaini</em>, <em>T. phayrei</em></td></tr>
-                        <tr><td>Sub-famili Colobinae</td><td><em>Simia polycomos</em>, <em>Simia nemaeus</em>, <em>Simia badius</em></td></tr>
-                        <tr><td>Presbytini (Surili)</td><td><em>Presbytis mitrata</em> (Surili)</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <button type="button" class="btn btn-outline" style="margin-top: 14px;" id="btn-back-materi">⬅ Kembali ke Menu Utama</button>
+    <div class="controls">
+        <button type="button" class="btn" id="btn-reset">🔄 Atur Ulang</button>
+        <button type="button" class="btn btn-run" id="btn-run">🚀 Jalankan & Rakit Pohon</button>
     </div>
 
-    <!-- Screen Quiz -->
-    <div id="screen-quiz" class="hidden">
-        <div class="hud-bar">
-            <div><span class="badge" id="hud-chapter-title">Chapter 1</span></div>
-            <div>Halaman: <span id="hud-page" style="color: var(--primary);">1 / 11</span></div>
-            <div>Nyawa: <span id="hud-hearts" style="color: var(--danger);">❤️ ❤️ ❤️</span></div>
-        </div>
-
-        <div class="progress-bar-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
-
-        <div class="question-card">
-            <div class="question-text" id="question-text">Memuat Soal...</div>
-            <div class="options-grid" id="options-container"></div>
-            <div id="feedback-container"></div>
-        </div>
-
-        <button type="button" class="btn btn-primary hidden" id="btn-next-page">Halaman Selanjutnya ➔</button>
-    </div>
-
-    <!-- Screen Result -->
-    <div id="screen-result" class="hidden" style="text-align: center;">
-        <h2 id="result-header">Ujian Selesai</h2>
-        <p id="result-desc" style="font-size: 0.9rem; color: #475569; margin-top: 4px;"></p>
-        
-        <div id="final-score-box" style="font-size: 1.15rem; font-weight: bold; padding: 12px; background: #f1f5f9; border-radius: 8px; margin: 12px 0;"></div>
-
-        <h3 style="text-align: left; font-size: 0.95rem; color: #334155; margin-bottom: 6px;">Review & Pembahasan Kunci Jawaban (11 Soal):</h3>
-        
-        <div class="review-container">
-            <table class="review-table">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Pertanyaan</th>
-                        <th>Jawaban Kamu</th>
-                        <th>Status & Kunci Jawaban</th>
-                    </tr>
-                </thead>
-                <tbody id="review-table-body"></tbody>
-            </table>
-        </div>
-
-        <div style="display: flex; gap: 10px; margin-top: 16px;">
-            <button type="button" class="btn btn-outline" id="btn-result-home">Menu Utama</button>
-            <button type="button" class="btn btn-primary" id="btn-result-retry">Ulangi Chapter 🔄</button>
-        </div>
+    <div class="tree-section hidden" id="tree-section">
+        <h2 style="font-size: 1.1rem; margin-bottom: 4px;">🌳 Pohon Filogeni Hasil</h2>
+        <p id="tree-status-msg" style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 12px; text-align: center;"></p>
+        <div class="tree-svg-container" id="tree-canvas"></div>
     </div>
 </div>
 
 <script>
-const chapterData = [
-    {
-        title: "Chapter 1: Famili Felidae",
-        questions: [
-            {
-                q: "1. Pada konstruksi pohon filogeni kelompok Felidae, titik percabangan utama (node) paling dasar mewakili...",
-                options: [
-                    "A. Perubahan warna rambut spesies secara mendadak",
-                    "B. Nenek moyang bersama (common ancestor) seluruh takson felidae",
-                    "C. Genus Panthera yang paling modern",
-                    "D. Spesies Leopardus pardalis yang sudah punah"
-                ],
-                correct: 1,
-                explain: "Node dasar pada pohon filogeni menggambarkan garis evolusi dari nenek moyang bersama seluruh takson dalam famili tersebut."
-            },
-            {
-                q: "2. Spesies Leopardus pardalis secara lokal dikenal sebagai Kucing tutul kecil. Berdasarkan hirarki taksonomi, kata 'Leopardus' menunjukkan...",
-                options: [
-                    "A. Nama penunjuk spesies",
-                    "B. Tingkat Famili",
-                    "C. Tingkat Genus",
-                    "D. Kategori Sub-spesies"
-                ],
-                correct: 2,
-                explain: "Kata pertama dalam tata nama Binomial Nomenclature menunjukkan tingkat takson Genus."
-            },
-            {
-                q: "3. Manakah pasangan spesies yang berada dalam satu takson percabangan genus Acinonyx pada filogeni Felidae?",
-                options: [
-                    "A. Acinonyx jubatus dan Acinonyx intermedius",
-                    "B. Acinonyx jubatus dan Panthera tigris",
-                    "C. Acinonyx intermedius dan Leopardus pardalis",
-                    "D. Acinonyx jubatus dan Prionailurus planiceps"
-                ],
-                correct: 0,
-                explain: "Acinonyx jubatus (Cheetah) dan Acinonyx intermedius (Cheetah purba) berada dalam genus Acinonyx yang sama."
-            },
-            {
-                q: "4. Di antara hewan felidae berikut, manakah spesies yang TIDAK termasuk dalam percabangan genus Panthera?",
-                options: [
-                    "A. Panthera onca (Jaguar)",
-                    "B. Panthera uncia (Macan tutul salju)",
-                    "C. Prionailurus bengalensis (Kucing bengal)",
-                    "D. Panthera pardus (Macan tutul)"
-                ],
-                correct: 2,
-                explain: "Prionailurus bengalensis tergolong dalam genus Prionailurus, bukan Panthera."
-            },
-            {
-                q: "5. Kucing tandang (Prionailurus planiceps) memiliki hubungan kekerabatan paling dekat di tingkat genus dengan...",
-                options: [
-                    "A. Panthera leo (Singa)",
-                    "B. Prionailurus bengalensis (Kucing bengal)",
-                    "C. Leopardus pardalis (Kucing tutul kecil)",
-                    "D. Acinonyx jubatus (Cheetah)"
-                ],
-                correct: 1,
-                explain: "Prionailurus planiceps berkerabat paling dekat dengan Prionailurus bengalensis karena berbagi genus yang sama."
-            },
-            {
-                q: "6. Manakah penulisan nama ilmiah Harimau yang paling tepat sesuai kaidah Binomial Nomenclature Linnaeus?",
-                options: [
-                    "A. panthera Tigris",
-                    "B. Panthera tigris",
-                    "C. Panthera Tigris",
-                    "D. PANTHERA tigris"
-                ],
-                correct: 1,
-                explain: "Sesuai aturan: Kata genus diawali kapital, kata spesies huruf kecil semua, dan ditulis miring (italic)."
-            },
-            {
-                q: "7. Singa (Panthera leo) dan Jaguar (Panthera onca) dikelompokkan dalam genus Panthera karena memiliki persamaan...",
-                options: [
-                    "A. Habitat di gurun salju saja",
-                    "B. Karakter morfologi dan garis keturunan evolusi dekat",
-                    "C. Ukuran tubuh yang identik dengan Kucing tutul kecil",
-                    "D. Struktur DNA yang berbeda 100%"
-                ],
-                correct: 1,
-                explain: "Takson genus disatukan berdasarkan persamaan struktur fisik (morfologi) dan genetik evolusioner."
-            },
-            {
-                q: "8. Spesies Panthera uncia (Macan tutul salju) berada pada cabang yang sama dengan Panthera pardus (Macan tutul). Hal ini menunjukkan bahwa...",
-                options: [
-                    "A. Keduanya tidak memiliki nenek moyang bersama",
-                    "B. Keduanya memiliki hubungan kekerabatan yang sangat dekat",
-                    "C. Panthera uncia adalah induk dari Prionailurus",
-                    "D. Kedua hewan tersebut adalah spesies yang sama persis"
-                ],
-                correct: 1,
-                explain: "Berada dalam percabangan genus yang sama berarti kedua spesies memiliki kekerabatan evolusi yang dekat."
-            },
-            {
-                q: "9. Dalam struktur taksonomi Felidae, manakah genus yang memuat spesies Kucing tutul kecil (Ocelot)?",
-                options: [
-                    "A. Genus Leopardus",
-                    "B. Genus Acinonyx",
-                    "C. Genus Panthera",
-                    "D. Genus Prionailurus"
-                ],
-                correct: 0,
-                explain: "Kucing tutul kecil tergolong dalam genus Leopardus (Leopardus pardalis)."
-            },
-            {
-                q: "10. Cheetah purba (Acinonyx intermedius) berada pada satu genus dengan Cheetah modern. Takson genusnya adalah...",
-                options: [
-                    "A. Prionailurus",
-                    "B. Acinonyx",
-                    "C. Panthera",
-                    "D. Simia"
-                ],
-                correct: 1,
-                explain: "Acinonyx intermedius memuat kata pertama 'Acinonyx' sebagai nama genusnya."
-            },
-            {
-                q: "11. Pada penulisan nama ilmiah Prionailurus bengalensis, kata kedua (bengalensis) berperan sebagai...",
-                options: [
-                    "A. Nama Genus",
-                    "B. Epitheton Specificum (Penunjuk Spesies)",
-                    "C. Nama Famili",
-                    "D. Nama Sub-species"
-                ],
-                correct: 1,
-                explain: "Kata kedua dalam tata nama ganda adalah Epitheton Specificum atau penunjuk spesies."
-            }
-        ]
-    },
-    {
-        title: "Chapter 2: Famili Cercopithecidae",
-        questions: [
-            {
-                q: "1. Beruk (Macaca nemestrina) dikelompokkan dalam genus Macaca bersama dengan spesies kera berikut, YAITU...",
-                options: [
-                    "A. Macaca fascicularis",
-                    "B. Papio anubis",
-                    "C. Trachypithecus obscurus",
-                    "D. Presbytis mitrata"
-                ],
-                correct: 0,
-                explain: "Macaca fascicularis (Monyet ekor panjang) berada dalam genus Macaca yang sama dengan Macaca nemestrina."
-            },
-            {
-                q: "2. Kelompok primata yang tergolong ke dalam genus Papio dikenal secara umum dengan nama...",
-                options: [
-                    "A. Lutung",
-                    "B. Babon",
-                    "C. Surili",
-                    "D. Kera Ekor Panjang"
-                ],
-                correct: 1,
-                explain: "Genus Papio mencakup kelompok spesies Babon (seperti Papio anubis & Papio hamadryas)."
-            },
-            {
-                q: "3. Spesies Trachypithecus obscurus dan Trachypithecus germaini dikelompokkan dalam takson genus yang sama yaitu...",
-                options: [
-                    "A. Genus Macaca",
-                    "B. Genus Trachypithecus (Lutung)",
-                    "C. Genus Papio",
-                    "D. Sub-famili Colobinae"
-                ],
-                correct: 1,
-                explain: "Kedua spesies tersebut memiliki kata pertama Trachypithecus yang merupakan genus kelompok Lutung."
-            },
-            {
-                q: "4. Primata Presbytis mitrata pada percabangan filogeni Cercopithecidae dikenal dengan nama lokal...",
-                options: [
-                    "A. Beruk",
-                    "B. Surili",
-                    "C. Babon Anubis",
-                    "D. Lutung Kelabu"
-                ],
-                correct: 1,
-                explain: "Presbytis mitrata adalah nama ilmiah untuk primata Surili."
-            },
-            {
-                q: "5. Spesies Simia polycomos dan Simia nemaeus dalam klasifikasi Cercopithecidae dimasukkan ke dalam kelompok...",
-                options: [
-                    "A. Sub-famili Colobinae",
-                    "B. Genus Panthera",
-                    "C. Genus Leopardus",
-                    "D. Kelompok Presbytini Surili"
-                ],
-                correct: 0,
-                explain: "Dalam catatan filogeni Cercopithecidae, spesies Simia polycomos termasuk sub-famili Colobinae."
-            },
-            {
-                q: "6. Di antara spesies genus Macaca berikut (M. fascicularis, M. fuscata, M. thibetana, M. munzala), manakah yang tergolong dalam genus yang sama?",
-                options: [
-                    "A. Semua empat spesies tersebut berada dalam genus Macaca yang sama",
-                    "B. Hanya M. fascicularis dan Papio anubis yang sama",
-                    "C. M. thibetana termasuk kelompok Lutung",
-                    "D. M. munzala tergolong dalam famili Felidae"
-                ],
-                correct: 0,
-                explain: "Semua spesies dengan awalan Macaca (nemestrina, fascicularis, fuscata, thibetana, munzala) berada dalam genus Macaca."
-            },
-            {
-                q: "7. Spesies Macaca thibetana dan Macaca munzala berbagi titik percabangan genus yang sama, artinya...",
-                options: [
-                    "A. Keduanya tidak berkerabat sama sekali",
-                    "B. Keduanya memiliki hubungan kekerabatan dekat di bawah genus Macaca",
-                    "C. Macaca thibetana tergolong kelompok Babon",
-                    "D. Macaca fuscata adalah sejenis kucing"
-                ],
-                correct: 1,
-                explain: "Kesamaan genus Macaca menunjukkan kekerabatan evolusioner yang dekat."
-            },
-            {
-                q: "8. Primata Babon Kindae memiliki nama ilmiah Papio kindae. Spesies ini berkerabat dekat di tingkat genus dengan...",
-                options: [
-                    "A. Papio hamadryas dan Papio anubis",
-                    "B. Macaca nemestrina",
-                    "C. Trachypithecus phayrei",
-                    "D. Presbytis mitrata"
-                ],
-                correct: 0,
-                explain: "Papio kindae berkerabat dekat dengan Papio hamadryas & Papio anubis karena sama-sama genus Papio."
-            },
-            {
-                q: "9. Spesies Trachypithecus phayrei dalam pohon filogeni diletakkan pada cabang yang sama dengan Trachypithecus obscurus karena...",
-                options: [
-                    "A. Keduanya adalah anggota genus Trachypithecus (Lutung)",
-                    "B. Keduanya tergolong genus Macaca",
-                    "C. Keduanya merupakan spesies Kucing Tutul",
-                    "D. Keduanya berasal dari famili Felidae"
-                ],
-                correct: 0,
-                explain: "Trachypithecus phayrei tergolong dalam genus Trachypithecus (Lutung) bersama T. obscurus & T. germaini."
-            },
-            {
-                q: "10. Primata Simia badius pada taksonomi Cercopithecidae dimasukkan ke dalam sub-kelompok...",
-                options: [
-                    "A. Sub-famili Colobinae bersama Simia polycomos & Simia nemaeus",
-                    "B. Genus Panthera",
-                    "C. Genus Acinonyx",
-                    "D. Genus Leopardus"
-                ],
-                correct: 0,
-                explain: "Simia badius tergolong dalam sub-famili Colobinae."
-            },
-            {
-                q: "11. Babon Anubis (Papio anubis) dan Surili (Presbytis mitrata) berada pada cabang takson yang berbeda. Manakah pernyataan yang paling tepat?",
-                options: [
-                    "A. Papio anubis tergolong genus Babon, sedangkan Presbytis mitrata tergolong kelompok Presbytini",
-                    "B. Keduanya berada dalam genus yang sama persis",
-                    "C. Presbytis mitrata tergolong genus Panthera",
-                    "D. Papio anubis adalah jenis Kucing Tutul"
-                ],
-                correct: 0,
-                explain: "Papio anubis berada di genus Papio, sedangkan Presbytis mitrata berada di kelompok Presbytini (Surili)."
-            }
-        ]
-    }
+const baseAnimalsData = [
+    { id: "a1", name: "Harimau", latin: "Panthera tigris", emoji: "🐅", wagonId: "w_panthera" },
+    { id: "a2", name: "Singa", latin: "Panthera leo", emoji: "🦁", wagonId: "w_panthera" },
+    { id: "a3", name: "Jaguar", latin: "Panthera onca", emoji: "🐆", wagonId: "w_panthera" },
+    { id: "a4", name: "Cheetah", latin: "Acinonyx jubatus", emoji: "🎷", wagonId: "w_acinonyx" },
+    { id: "a5", name: "Kucing Bengal", latin: "Prionailurus bengalensis", emoji: "🐈", wagonId: "w_prionailurus" },
+    { id: "a6", name: "Beruk", latin: "Macaca nemestrina", emoji: "🐒", wagonId: "w_macaca" },
+    { id: "a7", name: "Monyet Ekor Panjang", latin: "Macaca fascicularis", emoji: "🐵", wagonId: "w_macaca" },
+    { id: "a8", name: "Babon Anubis", latin: "Papio anubis", emoji: "🦧", wagonId: "w_papio" },
+    { id: "a9", name: "Lutung Kelabu", latin: "Trachypithecus obscurus", emoji: "🦍", wagonId: "w_trachypithecus" },
+    { id: "a10", name: "Surili", latin: "Presbytis mitrata", emoji: "🦥", wagonId: "w_presbytis" }
 ];
 
-let currentChapterIdx = 0;
-let currentPageIdx = 0;
-let lives = 3;
-let score = 0;
-let userAnswers = [];
+const wagonsData = [
+    { id: "w_panthera", title: "Genus Panthera", capacity: 3 },
+    { id: "w_acinonyx", title: "Genus Acinonyx", capacity: 1 },
+    { id: "w_prionailurus", title: "Genus Prionailurus", capacity: 1 },
+    { id: "w_macaca", title: "Genus Macaca", capacity: 2 },
+    { id: "w_papio", title: "Genus Papio", capacity: 1 },
+    { id: "w_trachypithecus", title: "Genus Trachypithecus", capacity: 1 },
+    { id: "w_presbytis", title: "Kelompok Presbytini", capacity: 1 }
+];
 
-function showHome() {
-    document.getElementById('screen-home').classList.remove('hidden');
-    document.getElementById('screen-materi').classList.add('hidden');
-    document.getElementById('screen-quiz').classList.add('hidden');
-    document.getElementById('screen-result').classList.add('hidden');
+let animalsData = [];
+let selectedAnimalId = null;
+let placements = {};
+
+const poolEl = document.getElementById('animal-pool');
+const trainContainerEl = document.getElementById('train-container');
+const poolCounterEl = document.getElementById('pool-counter');
+const treeSectionEl = document.getElementById('tree-section');
+const treeCanvasEl = document.getElementById('tree-canvas');
+const treeStatusMsgEl = document.getElementById('tree-status-msg');
+
+function shuffle(array) {
+    let arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
 }
 
-function showMateri() {
-    document.getElementById('screen-home').classList.add('hidden');
-    document.getElementById('screen-materi').classList.remove('hidden');
+function initGame() {
+    selectedAnimalId = null;
+    placements = {};
+    animalsData = shuffle(baseAnimalsData);
+    treeSectionEl.classList.add('hidden');
+    renderPool();
+    renderWagons();
+    updateCounter();
 }
 
-function startChapter(idx) {
-    currentChapterIdx = idx;
-    currentPageIdx = 0;
-    lives = 3;
-    score = 0;
-    userAnswers = [];
+function renderPool() {
+    poolEl.innerHTML = "";
+    animalsData.forEach(animal => {
+        const isPlaced = !!placements[animal.id];
+        const isSelected = selectedAnimalId === animal.id;
 
-    document.getElementById('screen-home').classList.add('hidden');
-    document.getElementById('screen-result').classList.add('hidden');
-    document.getElementById('screen-quiz').classList.remove('hidden');
-    
-    renderPage();
-}
-
-function updateHUD() {
-    const chapter = chapterData[currentChapterIdx];
-    document.getElementById('hud-chapter-title').innerText = chapter.title;
-    document.getElementById('hud-page').innerText = `${currentPageIdx + 1} / ${chapter.questions.length}`;
-    
-    let heartStr = "";
-    for (let i = 0; i < lives; i++) heartStr += "❤️ ";
-    if (lives === 0) heartStr = "❌ (Habis)";
-    document.getElementById('hud-hearts').innerText = heartStr;
-
-    const pct = ((currentPageIdx + 1) / chapter.questions.length) * 100;
-    document.getElementById('progress-bar').style.width = `${pct}%`;
-}
-
-function renderPage() {
-    updateHUD();
-    const chapter = chapterData[currentChapterIdx];
-    const qData = chapter.questions[currentPageIdx];
-
-    document.getElementById('question-text').innerText = qData.q;
-    
-    const optionsContainer = document.getElementById('options-container');
-    optionsContainer.innerHTML = "";
-    document.getElementById('feedback-container').innerHTML = "";
-    document.getElementById('btn-next-page').classList.add('hidden');
-
-    qData.options.forEach((optText, optIdx) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'option-btn';
-        btn.innerText = optText;
-        btn.onclick = () => selectOption(optIdx);
-        optionsContainer.appendChild(btn);
-    });
-}
-
-function selectOption(selectedOptIdx) {
-    const chapter = chapterData[currentChapterIdx];
-    const qData = chapter.questions[currentPageIdx];
-    const optionsContainer = document.getElementById('options-container');
-    const feedbackContainer = document.getElementById('feedback-container');
-    const optionBtns = optionsContainer.querySelectorAll('.option-btn');
-
-    // Nonaktifkan semua opsi secara permanen setelah diklik
-    optionBtns.forEach(btn => {
-        btn.disabled = true;
-        btn.classList.add('disabled');
-    });
-
-    const isCorrect = (selectedOptIdx === qData.correct);
-
-    userAnswers[currentPageIdx] = {
-        question: qData.q,
-        userOptText: qData.options[selectedOptIdx],
-        correctOptText: qData.options[qData.correct],
-        isCorrect: isCorrect,
-        explain: qData.explain
-    };
-
-    if (isCorrect) {
-        score += 10;
-        optionBtns[selectedOptIdx].classList.add('selected-correct');
-        feedbackContainer.innerHTML = `
-            <div class="feedback-alert feedback-correct">
-                🟢 Jawaban Benar! (+10 Poin)
-            </div>
+        const card = document.createElement('div');
+        card.className = `animal-card ${isPlaced ? 'placed' : ''} ${isSelected ? 'selected' : ''}`;
+        card.innerHTML = `
+            <span class="animal-emoji">${animal.emoji}</span>
+            <span class="animal-name">${animal.name}</span>
+            <span class="animal-latin">${animal.latin}</span>
         `;
-    } else {
-        lives--;
-        updateHUD();
-        optionBtns[selectedOptIdx].classList.add('selected-wrong');
+        card.onclick = () => {
+            if (isPlaced) return;
+            selectedAnimalId = (selectedAnimalId === animal.id) ? null : animal.id;
+            renderPool();
+        };
+        poolEl.appendChild(card);
+    });
+}
+
+function renderWagons() {
+    const existingWagons = trainContainerEl.querySelectorAll('.wagon');
+    existingWagons.forEach(w => w.remove());
+
+    wagonsData.forEach(wagon => {
+        const wagonEl = document.createElement('div');
+        wagonEl.className = 'wagon';
         
-        const container = document.getElementById('main-container');
-        container.classList.add('shake');
-        setTimeout(() => container.classList.remove('shake'), 400);
+        const placedAnimals = Object.keys(placements)
+            .filter(aId => placements[aId] === wagon.id)
+            .map(aId => animalsData.find(a => a.id === aId));
 
-        feedbackContainer.innerHTML = `
-            <div class="feedback-alert feedback-wrong">
-                🔴 Jawaban Salah! Nyawa berkurang 1.
+        wagonEl.innerHTML = `
+            <div class="wagon-header">
+                <div class="wagon-title">🚃 ${wagon.title}</div>
+                <div class="wagon-capacity">${placedAnimals.length} / ${wagon.capacity} Hewan</div>
             </div>
+            <div class="wagon-slots" id="slot-${wagon.id}"></div>
         `;
-    }
 
-    const btnNext = document.getElementById('btn-next-page');
-    btnNext.classList.remove('hidden');
+        const slotsEl = wagonEl.querySelector(`#slot-${wagon.id}`);
+        placedAnimals.forEach(anim => {
+            const item = document.createElement('div');
+            item.className = 'placed-item';
+            item.innerHTML = `
+                <span>${anim.emoji} ${anim.name}</span>
+                <button type="button" class="btn-remove" title="Keluarkan dari gerbong">✕</button>
+            `;
+            item.querySelector('.btn-remove').onclick = (e) => {
+                e.stopPropagation();
+                delete placements[anim.id];
+                renderPool();
+                renderWagons();
+                updateCounter();
+            };
+            slotsEl.appendChild(item);
+        });
 
-    if (lives <= 0) {
-        btnNext.innerText = "Nyawa Habis! Lihat Review Hasil ➔";
-    } else if (currentPageIdx === chapter.questions.length - 1) {
-        btnNext.innerText = "Selesai & Lihat Review ➔";
-    } else {
-        btnNext.innerText = "Halaman Selanjutnya ➔";
-    }
+        wagonEl.onclick = () => {
+            if (!selectedAnimalId) return;
+            if (placedAnimals.length >= wagon.capacity) {
+                alert("Gerbong ini sudah penuh!");
+                return;
+            }
+            placements[selectedAnimalId] = wagon.id;
+            selectedAnimalId = null;
+            renderPool();
+            renderWagons();
+            updateCounter();
+        };
+
+        trainContainerEl.appendChild(wagonEl);
+    });
 }
 
-function nextPage() {
-    const chapter = chapterData[currentChapterIdx];
-
-    if (lives <= 0 || currentPageIdx >= chapter.questions.length - 1) {
-        endQuiz();
-    } else {
-        currentPageIdx++;
-        renderPage();
-    }
+function updateCounter() {
+    const placedCount = Object.keys(placements).length;
+    const remaining = animalsData.length - placedCount;
+    poolCounterEl.innerText = `Tersisa: ${remaining} Hewan`;
 }
 
-function endQuiz() {
-    document.getElementById('screen-quiz').classList.add('hidden');
-    document.getElementById('screen-result').classList.remove('hidden');
-
-    const chapter = chapterData[currentChapterIdx];
-    const totalSoal = chapter.questions.length;
-    const reviewTbody = document.getElementById('review-table-body');
-    reviewTbody.innerHTML = "";
+function runTrainAndBuildTree() {
+    const placedCount = Object.keys(placements).length;
+    if (placedCount < animalsData.length) {
+        alert("Harap masukkan seluruh 10 hewan ke dalam gerbong terlebih dahulu!");
+        return;
+    }
 
     let correctCount = 0;
-
-    chapter.questions.forEach((qData, idx) => {
-        const ans = userAnswers[idx];
-        if (ans && ans.isCorrect) correctCount++;
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${idx + 1}</td>
-            <td><strong>${qData.q}</strong></td>
-            <td>${ans ? ans.userOptText : '<span style="color:#94a3b8;">Belum dijawab</span>'}</td>
-            <td>
-                ${ans && ans.isCorrect 
-                    ? `<span style="color:var(--success); font-weight:bold;">🟢 Benar (+10)</span>` 
-                    : `<span style="color:var(--danger); font-weight:bold;">🔴 Salah</span><br>
-                       <small style="color:#0f172a;"><b>Kunci:</b> ${qData.options[qData.correct]}</small>`
-                }
-                <br><small style="color:#475569;"><em>${qData.explain}</em></small>
-            </td>
-        `;
-        reviewTbody.appendChild(tr);
+    animalsData.forEach(a => {
+        if (placements[a.id] === a.wagonId) correctCount++;
     });
 
-    const header = document.getElementById('result-header');
-    const desc = document.getElementById('result-desc');
-    const scoreBox = document.getElementById('final-score-box');
+    treeSectionEl.classList.remove('hidden');
+    treeSectionEl.scrollIntoView({ behavior: 'smooth' });
 
-    if (lives <= 0) {
-        header.innerText = "Ujian Gagal (Nyawa Habis)";
-        header.style.color = "var(--danger)";
-        desc.innerText = "Nyawa kamu habis sebelum menyelesaikan seluruh halaman. Pelajari review kunci jawaban di bawah:";
-    } else if (correctCount === totalSoal) {
-        header.innerText = "Sempurna! Selesai 100%";
-        header.style.color = "var(--success)";
-        desc.innerText = "Selamat! Kamu menjawab seluruh 11 soal dengan benar tanpa kehilangan nyawa.";
+    if (correctCount === animalsData.length) {
+        treeStatusMsgEl.innerHTML = `<strong>Sempurna! (10/10 Tepat)</strong><br>Seluruh gerbong terisi sesuai takson. Pohon Filogeni berhasil terhubung sempurna!`;
     } else {
-        header.innerText = "Ujian Selesai";
-        header.style.color = "var(--primary)";
-        desc.innerText = `Kamu telah menyelesaikan 11 halaman soal.`;
+        treeStatusMsgEl.innerHTML = `<strong>Hasil: ${correctCount} dari 10 Tepat</strong><br>Beberapa hewan diletakkan di gerbong yang belum pas. Perhatikan cabang pohon di bawah:`;
     }
 
-    scoreBox.innerHTML = `Total Skor: <span style="color:var(--primary);">${score} Poin</span> (${correctCount} dari ${totalSoal} Soal Benar)`;
+    renderSVGPhylogenyTree();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('btn-materi').addEventListener('click', showMateri);
-    document.getElementById('btn-ch1').addEventListener('click', function() { startChapter(0); });
-    document.getElementById('btn-ch2').addEventListener('click', function() { startChapter(1); });
-    document.getElementById('btn-back-materi').addEventListener('click', showHome);
-    document.getElementById('btn-next-page').addEventListener('click', nextPage);
-    document.getElementById('btn-result-home').addEventListener('click', showHome);
-    document.getElementById('btn-result-retry').addEventListener('click', function() { startChapter(currentChapterIdx); });
-});
+function renderSVGPhylogenyTree() {
+    treeCanvasEl.innerHTML = `
+        <svg width="100%" height="100%" viewBox="0 0 750 380" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .line-main { stroke: #333333; stroke-width: 2.5; fill: none; }
+                .node-text { fill: #111111; font-size: 11px; font-weight: bold; }
+                .latin-text { fill: #555555; font-size: 10px; font-style: italic; }
+                .group-label { fill: #000000; font-size: 11px; font-weight: bold; }
+            </style>
+
+            <path d="M 20 190 L 80 190" class="line-main" />
+            <text x="10" y="210" class="node-text">Nenek Moyang Bersama</text>
+
+            <path d="M 80 190 L 80 100 L 150 100" class="line-main" />
+            <text x="90" y="90" class="group-label">Famili Felidae</text>
+
+            <path d="M 150 100 L 150 40 L 250 40" class="line-main" />
+            <text x="260" y="44" class="node-text">🐅 Harimau, 🦁 Singa, 🐆 Jaguar <tspan class="latin-text">(Genus Panthera)</tspan></text>
+
+            <path d="M 150 100 L 250 100" class="line-main" />
+            <text x="260" y="104" class="node-text">🎷 Cheetah <tspan class="latin-text">(Genus Acinonyx)</tspan></text>
+
+            <path d="M 150 100 L 150 150 L 250 150" class="line-main" />
+            <text x="260" y="154" class="node-text">🐈 Kucing Bengal <tspan class="latin-text">(Genus Prionailurus)</tspan></text>
+
+            <path d="M 80 190 L 80 280 L 150 280" class="line-main" />
+            <text x="90" y="295" class="group-label">Famili Cercopithecidae</text>
+
+            <path d="M 150 280 L 150 220 L 250 220" class="line-main" />
+            <text x="260" y="224" class="node-text">🐒 Beruk & 🐵 Monyet Ekor Panjang <tspan class="latin-text">(Genus Macaca)</tspan></text>
+
+            <path d="M 150 280 L 250 260" class="line-main" />
+            <text x="260" y="264" class="node-text">🦧 Babon Anubis <tspan class="latin-text">(Genus Papio)</tspan></text>
+
+            <path d="M 150 280 L 150 310 L 250 310" class="line-main" />
+            <text x="260" y="314" class="node-text">🦍 Lutung Kelabu <tspan class="latin-text">(Genus Trachypithecus)</tspan></text>
+
+            <path d="M 150 280 L 150 350 L 250 350" class="line-main" />
+            <text x="260" y="354" class="node-text">🦥 Surili <tspan class="latin-text">(Kelompok Presbytini)</tspan></text>
+        </svg>
+    `;
+}
+
+document.getElementById('btn-reset').onclick = initGame;
+document.getElementById('btn-run').onclick = runTrainAndBuildTree;
+
+initGame();
 </script>
 </body>
 </html>
