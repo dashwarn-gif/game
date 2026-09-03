@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evolution Express</title>
+    <title>Evolution Express — Game Filogeni Interaktif</title>
     <style>
         :root {
             --bg-color: #f4f4f4;
@@ -48,6 +48,7 @@
             padding: 16px;
             border-radius: 6px;
             border: 2px solid var(--border-color);
+            position: relative;
         }
 
         h1 {
@@ -60,6 +61,148 @@
             font-size: 0.85rem;
             color: var(--text-sub);
             line-height: 1.3;
+        }
+
+        .timer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            background: #111111;
+            color: #ffffff;
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 0.78rem;
+            font-weight: bold;
+        }
+
+        .timer-badge.time-up {
+            background: #7a1f1f;
+        }
+
+        /* ===== Layar Peta Level ===== */
+        .level-map {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .level-map-title {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 12px;
+        }
+
+        .level-card {
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #fbfbfb;
+        }
+
+        .level-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .level-card-tag {
+            font-size: 0.68rem;
+            color: var(--text-sub);
+            border: 1px solid var(--gray-dark);
+            border-radius: 10px;
+            padding: 1px 8px;
+            white-space: nowrap;
+        }
+
+        .level-card-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        .level-card-desc {
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            line-height: 1.3;
+        }
+
+        .level-card-stars {
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+        }
+
+        .level-card-score {
+            font-size: 0.72rem;
+            color: var(--text-sub);
+        }
+
+        .btn-level-start {
+            margin-top: 4px;
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 2px solid var(--border-color);
+            background: #333333;
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-level-start:hover {
+            background: #000000;
+        }
+
+        .summary-box {
+            border-top: 1px dashed var(--gray-dark);
+            padding-top: 10px;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            text-align: center;
+        }
+
+        /* ===== Layar Permainan ===== */
+        .hidden {
+            display: none !important;
+        }
+
+        .play-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 2px solid var(--border-color);
+            background: #ffffff;
+            font-size: 0.78rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-back:hover {
+            background: var(--gray-light);
+        }
+
+        .current-level-label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-align: right;
         }
 
         /* Pool Kartu Hewan */
@@ -78,6 +221,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .animal-grid {
@@ -155,6 +300,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .locomotive h3 {
@@ -168,6 +314,7 @@
             border: 2px dashed var(--border-color);
             border-radius: 4px;
             width: 160px;
+            flex-shrink: 0;
             min-height: 140px;
             padding: 8px;
             display: flex;
@@ -187,7 +334,7 @@
         }
 
         .wagon-title {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: bold;
         }
 
@@ -208,13 +355,13 @@
             border: 1px solid var(--border-color);
             border-radius: 3px;
             padding: 4px 6px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 4px;
         }
 
-        /* Tombol pembatalan pilihan di dalam gerbong */
         .btn-remove {
             background: transparent;
             border: none;
@@ -224,6 +371,7 @@
             font-weight: bold;
             padding: 0 4px;
             line-height: 1;
+            flex-shrink: 0;
         }
 
         .btn-remove:hover {
@@ -235,6 +383,7 @@
             display: flex;
             gap: 10px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -274,11 +423,17 @@
         .tree-svg-container {
             width: 100%;
             max-width: 750px;
-            height: 380px;
+            overflow: auto;
+            border: 1px solid var(--gray-light);
+            border-radius: 4px;
         }
 
-        .hidden {
-            display: none !important;
+        .next-level-bar {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
     </style>
 </head>
@@ -288,67 +443,167 @@
     <header>
         <h1>🚂 Evolution Express</h1>
         <p class="desc">
-            Kelompokkan 10 hewan ke dalam gerbong takson yang sesuai. Setelah terisi, jalankan kereta untuk merakit <strong>Pohon Filogeni</strong>.
+            Kelompokkan hewan-hewan ke dalam gerbong takson yang sesuai di setiap level. Setelah terisi penuh, jalankan kereta untuk merakit <strong>Pohon Filogeni</strong>.
         </p>
+        <div class="timer-badge" id="timer-badge">⏳ 30:00</div>
     </header>
 
-    <div class="pool-section">
-        <div class="section-title">
-            <span>Pilih Hewan (Klik hewan, lalu klik gerbong tujuan)</span>
-            <span id="pool-counter" style="font-size:0.8rem; color:var(--text-sub);">Tersisa: 10 Hewan</span>
-        </div>
-        <div class="animal-grid" id="animal-pool"></div>
+    <!-- ===== PETA LEVEL ===== -->
+    <div class="level-map" id="level-map-section">
+        <div class="level-map-title">🗺️ Pilih Level</div>
+        <div class="level-grid" id="level-grid"></div>
+        <div class="summary-box" id="summary-box"></div>
     </div>
 
-    <div class="train-section">
-        <div class="train-container" id="train-container">
-            <div class="locomotive" id="locomotive">
-                <span style="font-size: 2rem;">🚂</span>
-                <h3>EVO-EXPRESS</h3>
-                <span style="font-size:0.65rem; color:#ccc; margin-top:2px;">Stasiun Takson</span>
+    <!-- ===== LAYAR PERMAINAN ===== -->
+    <div class="hidden" id="play-section" style="display:flex; flex-direction:column; gap:16px;">
+
+        <div class="play-topbar">
+            <button type="button" class="btn-back" id="btn-back-map">⬅️ Peta Level</button>
+            <div class="current-level-label" id="current-level-label"></div>
+        </div>
+
+        <div class="pool-section">
+            <div class="section-title">
+                <span>Pilih Hewan (Klik hewan, lalu klik gerbong tujuan)</span>
+                <span id="pool-counter" style="font-size:0.8rem; color:var(--text-sub);">Tersisa: 0 Hewan</span>
+            </div>
+            <div class="animal-grid" id="animal-pool"></div>
+        </div>
+
+        <div class="train-section">
+            <div class="train-container" id="train-container">
+                <div class="locomotive" id="locomotive">
+                    <span style="font-size: 2rem;">🚂</span>
+                    <h3>EVO-EXPRESS</h3>
+                    <span style="font-size:0.65rem; color:#ccc; margin-top:2px;">Stasiun Takson</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="controls">
-        <button type="button" class="btn" id="btn-reset">🔄 Atur Ulang</button>
-        <button type="button" class="btn btn-run" id="btn-run">🚀 Jalankan & Rakit Pohon</button>
-    </div>
+        <div class="controls">
+            <button type="button" class="btn" id="btn-reset">🔄 Atur Ulang</button>
+            <button type="button" class="btn btn-run" id="btn-run">🚀 Jalankan &amp; Rakit Pohon</button>
+        </div>
 
-    <div class="tree-section hidden" id="tree-section">
-        <h2 style="font-size: 1.1rem; margin-bottom: 4px;">🌳 Pohon Filogeni Hasil</h2>
-        <p id="tree-status-msg" style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 12px; text-align: center;"></p>
-        <div class="tree-svg-container" id="tree-canvas"></div>
+        <div class="tree-section hidden" id="tree-section">
+            <h2 style="font-size: 1.1rem; margin-bottom: 4px;">🌳 Pohon Filogeni Hasil</h2>
+            <p id="tree-status-msg" style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 12px; text-align: center;"></p>
+            <div class="tree-svg-container" id="tree-canvas"></div>
+            <div class="next-level-bar" id="next-level-bar"></div>
+        </div>
     </div>
 </div>
 
 <script>
-const baseAnimalsData = [
-    { id: "a1", name: "Harimau", latin: "Panthera tigris", emoji: "🐅", wagonId: "w_panthera" },
-    { id: "a2", name: "Singa", latin: "Panthera leo", emoji: "🦁", wagonId: "w_panthera" },
-    { id: "a3", name: "Jaguar", latin: "Panthera onca", emoji: "🐆", wagonId: "w_panthera" },
-    { id: "a4", name: "Cheetah", latin: "Acinonyx jubatus", emoji: "🎷", wagonId: "w_acinonyx" },
-    { id: "a5", name: "Kucing Bengal", latin: "Prionailurus bengalensis", emoji: "🐈", wagonId: "w_prionailurus" },
-    { id: "a6", name: "Beruk", latin: "Macaca nemestrina", emoji: "🐒", wagonId: "w_macaca" },
-    { id: "a7", name: "Monyet Ekor Panjang", latin: "Macaca fascicularis", emoji: "🐵", wagonId: "w_macaca" },
-    { id: "a8", name: "Babon Anubis", latin: "Papio anubis", emoji: "🦧", wagonId: "w_papio" },
-    { id: "a9", name: "Lutung Kelabu", latin: "Trachypithecus obscurus", emoji: "🦍", wagonId: "w_trachypithecus" },
-    { id: "a10", name: "Surili", latin: "Presbytis mitrata", emoji: "🦥", wagonId: "w_presbytis" }
+/* =========================================================
+   DATA HEWAN — diambil dari catatan papan tulis:
+   Famili Felidae (Genus Leopardus, Acinonyx, Panthera, Prionailurus)
+   Famili Cercopithecidae (Genus Macaca, Papio, Trachypithecus,
+   Sub-famili Colobinae, Presbytini)
+   ========================================================= */
+
+const felidaeWagons = [
+    { id: "leopardus", title: "Genus Leopardus", capacity: 1, familyId: "fel" },
+    { id: "acinonyx", title: "Genus Acinonyx", capacity: 2, familyId: "fel" },
+    { id: "panthera", title: "Genus Panthera", capacity: 5, familyId: "fel" },
+    { id: "prionailurus", title: "Genus Prionailurus", capacity: 2, familyId: "fel" }
 ];
 
-const wagonsData = [
-    { id: "w_panthera", title: "Genus Panthera", capacity: 3 },
-    { id: "w_acinonyx", title: "Genus Acinonyx", capacity: 1 },
-    { id: "w_prionailurus", title: "Genus Prionailurus", capacity: 1 },
-    { id: "w_macaca", title: "Genus Macaca", capacity: 2 },
-    { id: "w_papio", title: "Genus Papio", capacity: 1 },
-    { id: "w_trachypithecus", title: "Genus Trachypithecus", capacity: 1 },
-    { id: "w_presbytis", title: "Kelompok Presbytini", capacity: 1 }
+const felidaeAnimals = [
+    { id: "f1", name: "Kucing Tutul Kecil", latin: "Leopardus pardalis", emoji: "🐆", wagonId: "leopardus" },
+    { id: "f2", name: "Cheetah", latin: "Acinonyx jubatus", emoji: "🐆", wagonId: "acinonyx" },
+    { id: "f3", name: "Cheetah Purba", latin: "Acinonyx intermedius", emoji: "🦴", wagonId: "acinonyx" },
+    { id: "f4", name: "Harimau", latin: "Panthera tigris", emoji: "🐅", wagonId: "panthera" },
+    { id: "f5", name: "Singa", latin: "Panthera leo", emoji: "🦁", wagonId: "panthera" },
+    { id: "f6", name: "Jaguar", latin: "Panthera onca", emoji: "🐆", wagonId: "panthera" },
+    { id: "f7", name: "Macan Tutul", latin: "Panthera pardus", emoji: "🐆", wagonId: "panthera" },
+    { id: "f8", name: "Macan Tutul Salju", latin: "Panthera uncia", emoji: "🐆", wagonId: "panthera" },
+    { id: "f9", name: "Kucing Bengal", latin: "Prionailurus bengalensis", emoji: "🐈", wagonId: "prionailurus" },
+    { id: "f10", name: "Kucing Tandang", latin: "Prionailurus planiceps", emoji: "🐈‍⬛", wagonId: "prionailurus" }
 ];
 
-let animalsData = [];
-let selectedAnimalId = null;
-let placements = {};
+const cercoWagons = [
+    { id: "macaca", title: "Genus Macaca (Kera)", capacity: 5, familyId: "cer" },
+    { id: "papio", title: "Genus Papio (Babon)", capacity: 3, familyId: "cer" },
+    { id: "trachypithecus", title: "Genus Trachypithecus (Lutung)", capacity: 3, familyId: "cer" },
+    { id: "colobinae", title: "Sub-famili Colobinae (Monyet)", capacity: 3, familyId: "cer" },
+    { id: "presbytini", title: "Presbytini (Surili)", capacity: 1, familyId: "cer" }
+];
+
+const cercoAnimals = [
+    { id: "c1", name: "Monyet Salju Jepang", latin: "Macaca fuscata", emoji: "🐒", wagonId: "macaca" },
+    { id: "c2", name: "Monyet Ekor Panjang", latin: "Macaca fascicularis", emoji: "🐵", wagonId: "macaca" },
+    { id: "c3", name: "Beruk", latin: "Macaca nemestrina", emoji: "🐒", wagonId: "macaca" },
+    { id: "c4", name: "Monyet Tibet", latin: "Macaca thibetana", emoji: "🐵", wagonId: "macaca" },
+    { id: "c5", name: "Monyet Arunachal", latin: "Macaca munzala", emoji: "🐒", wagonId: "macaca" },
+    { id: "c6", name: "Babon Hamadryas", latin: "Papio hamadryas", emoji: "🦧", wagonId: "papio" },
+    { id: "c7", name: "Babon Anubis", latin: "Papio anubis", emoji: "🦧", wagonId: "papio" },
+    { id: "c8", name: "Babon Kinda", latin: "Papio kindae", emoji: "🦧", wagonId: "papio" },
+    { id: "c9", name: "Lutung Germain", latin: "Trachypithecus germaini", emoji: "🦍", wagonId: "trachypithecus" },
+    { id: "c10", name: "Lutung Phayre", latin: "Trachypithecus phayrei", emoji: "🦍", wagonId: "trachypithecus" },
+    { id: "c11", name: "Lutung Kelabu", latin: "Trachypithecus obscurus", emoji: "🦍", wagonId: "trachypithecus" },
+    { id: "c12", name: "Monyet Colobus Merah", latin: "Simia badius", emoji: "🐒", wagonId: "colobinae" },
+    { id: "c13", name: "Monyet Colobus Hitam-Putih", latin: "Simia polycomos", emoji: "🐵", wagonId: "colobinae" },
+    { id: "c14", name: "Monyet Douc", latin: "Simia nemaeus", emoji: "🐒", wagonId: "colobinae" },
+    { id: "c15", name: "Surili", latin: "Presbytis mitrata", emoji: "🦥", wagonId: "presbytini" }
+];
+
+const familyLabels = {
+    fel: "Famili Felidae",
+    cer: "Famili Cercopithecidae"
+};
+
+const LEVELS = [
+    {
+        id: 1,
+        title: "Level 1 · Famili Felidae",
+        desc: "10 kucing besar & kecil. Kelompokkan ke dalam 4 genus yang tepat.",
+        wagons: felidaeWagons,
+        animals: felidaeAnimals
+    },
+    {
+        id: 2,
+        title: "Level 2 · Famili Cercopithecidae",
+        desc: "15 primata Dunia Lama. Kelompokkan ke dalam 5 genus/kelompok.",
+        wagons: cercoWagons,
+        animals: cercoAnimals
+    },
+    {
+        id: 3,
+        title: "Level 3 · Tantangan Akhir",
+        desc: "Gabungan 25 hewan dari kedua famili sekaligus, ke dalam 9 gerbong.",
+        wagons: felidaeWagons.concat(cercoWagons),
+        animals: felidaeAnimals.concat(cercoAnimals)
+    }
+];
+
+/* =========================================================
+   STATE PERMAINAN
+   ========================================================= */
+
+// state per level, disimpan di memori selama sesi berjalan
+const levelState = {};
+LEVELS.forEach(lvl => {
+    levelState[lvl.id] = {
+        shuffledAnimals: shuffle(lvl.animals),
+        placements: {},
+        selectedAnimalId: null,
+        completed: false,
+        bestScore: 0
+    };
+});
+
+let currentLevelId = null; // null = di peta level
+
+/* =========================================================
+   ELEMEN DOM
+   ========================================================= */
+const levelGridEl = document.getElementById('level-grid');
+const summaryBoxEl = document.getElementById('summary-box');
+const levelMapSectionEl = document.getElementById('level-map-section');
+const playSectionEl = document.getElementById('play-section');
+const currentLevelLabelEl = document.getElementById('current-level-label');
 
 const poolEl = document.getElementById('animal-pool');
 const trainContainerEl = document.getElementById('train-container');
@@ -356,31 +611,138 @@ const poolCounterEl = document.getElementById('pool-counter');
 const treeSectionEl = document.getElementById('tree-section');
 const treeCanvasEl = document.getElementById('tree-canvas');
 const treeStatusMsgEl = document.getElementById('tree-status-msg');
+const nextLevelBarEl = document.getElementById('next-level-bar');
+const timerBadgeEl = document.getElementById('timer-badge');
+
+/* =========================================================
+   UTILITAS
+   ========================================================= */
 
 function shuffle(array) {
-    let arr = [...array];
+    let arr = array.slice();
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+        const tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
     }
     return arr;
 }
 
-function initGame() {
-    selectedAnimalId = null;
-    placements = {};
-    animalsData = shuffle(baseAnimalsData);
+function getLevelById(id) {
+    for (let i = 0; i < LEVELS.length; i++) {
+        if (LEVELS[i].id === id) return LEVELS[i];
+    }
+    return null;
+}
+
+function starsForScore(correct, total) {
+    if (total === 0) return "☆☆☆";
+    const ratio = correct / total;
+    if (ratio === 1) return "★★★";
+    if (ratio >= 0.7) return "★★☆";
+    if (ratio > 0) return "★☆☆";
+    return "☆☆☆";
+}
+
+/* =========================================================
+   PETA LEVEL
+   ========================================================= */
+
+function renderLevelMap() {
+    levelGridEl.innerHTML = "";
+
+    LEVELS.forEach(lvl => {
+        const st = levelState[lvl.id];
+        const card = document.createElement('div');
+        card.className = 'level-card';
+
+        const tag = st.completed ? "Selesai" : "Belum dimainkan";
+        const scoreLine = st.completed
+            ? `Skor terbaik: ${st.bestScore} / ${lvl.animals.length}`
+            : `${lvl.animals.length} hewan · ${lvl.wagons.length} gerbong`;
+
+        card.innerHTML = `
+            <div class="level-card-head">
+                <div class="level-card-title">${lvl.title}</div>
+                <span class="level-card-tag">${tag}</span>
+            </div>
+            <div class="level-card-desc">${lvl.desc}</div>
+            <div class="level-card-stars">${starsForScore(st.bestScore, lvl.animals.length)}</div>
+            <div class="level-card-score">${scoreLine}</div>
+        `;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-level-start';
+        btn.textContent = st.completed ? "▶️ Main Lagi" : "▶️ Mulai Level";
+        btn.onclick = () => openLevel(lvl.id);
+
+        card.appendChild(btn);
+        levelGridEl.appendChild(card);
+    });
+
+    renderSummaryBox();
+}
+
+function renderSummaryBox() {
+    const totalAnimals = LEVELS.reduce((sum, l) => sum + l.animals.length, 0);
+    const totalBest = LEVELS.reduce((sum, l) => sum + levelState[l.id].bestScore, 0);
+    const playedLevels = LEVELS.filter(l => levelState[l.id].completed).length;
+
+    if (playedLevels === 0) {
+        summaryBoxEl.textContent = "Mainkan ketiga level untuk merakit Pohon Filogeni lengkap!";
+    } else {
+        summaryBoxEl.textContent = `Total skor kamu sejauh ini: ${totalBest} / ${totalAnimals} hewan tepat, di ${playedLevels} dari ${LEVELS.length} level.`;
+    }
+}
+
+function showLevelMap() {
+    currentLevelId = null;
+    playSectionEl.classList.add('hidden');
+    levelMapSectionEl.classList.remove('hidden');
+    renderLevelMap();
+}
+
+/* =========================================================
+   LAYAR PERMAINAN
+   ========================================================= */
+
+function openLevel(levelId) {
+    currentLevelId = levelId;
+    const lvl = getLevelById(levelId);
+    const st = levelState[levelId];
+
+    currentLevelLabelEl.textContent = lvl.title;
     treeSectionEl.classList.add('hidden');
+    treeCanvasEl.innerHTML = "";
+    nextLevelBarEl.innerHTML = "";
+
+    levelMapSectionEl.classList.add('hidden');
+    playSectionEl.classList.remove('hidden');
+
     renderPool();
     renderWagons();
     updateCounter();
 }
 
+function currentLevel() {
+    return getLevelById(currentLevelId);
+}
+
+function currentState() {
+    return levelState[currentLevelId];
+}
+
 function renderPool() {
+    const lvl = currentLevel();
+    const st = currentState();
+    if (!lvl || !st) return;
+
     poolEl.innerHTML = "";
-    animalsData.forEach(animal => {
-        const isPlaced = !!placements[animal.id];
-        const isSelected = selectedAnimalId === animal.id;
+    st.shuffledAnimals.forEach(animal => {
+        const isPlaced = !!st.placements[animal.id];
+        const isSelected = st.selectedAnimalId === animal.id;
 
         const card = document.createElement('div');
         card.className = `animal-card ${isPlaced ? 'placed' : ''} ${isSelected ? 'selected' : ''}`;
@@ -391,7 +753,7 @@ function renderPool() {
         `;
         card.onclick = () => {
             if (isPlaced) return;
-            selectedAnimalId = (selectedAnimalId === animal.id) ? null : animal.id;
+            st.selectedAnimalId = (st.selectedAnimalId === animal.id) ? null : animal.id;
             renderPool();
         };
         poolEl.appendChild(card);
@@ -399,16 +761,21 @@ function renderPool() {
 }
 
 function renderWagons() {
+    const lvl = currentLevel();
+    const st = currentState();
+    if (!lvl || !st) return;
+
     const existingWagons = trainContainerEl.querySelectorAll('.wagon');
     existingWagons.forEach(w => w.remove());
 
-    wagonsData.forEach(wagon => {
+    lvl.wagons.forEach(wagon => {
         const wagonEl = document.createElement('div');
         wagonEl.className = 'wagon';
-        
-        const placedAnimals = Object.keys(placements)
-            .filter(aId => placements[aId] === wagon.id)
-            .map(aId => animalsData.find(a => a.id === aId));
+
+        const placedAnimals = Object.keys(st.placements)
+            .filter(aId => st.placements[aId] === wagon.id)
+            .map(aId => st.shuffledAnimals.find(a => a.id === aId))
+            .filter(a => !!a);
 
         wagonEl.innerHTML = `
             <div class="wagon-header">
@@ -428,7 +795,7 @@ function renderWagons() {
             `;
             item.querySelector('.btn-remove').onclick = (e) => {
                 e.stopPropagation();
-                delete placements[anim.id];
+                delete st.placements[anim.id];
                 renderPool();
                 renderWagons();
                 updateCounter();
@@ -437,13 +804,13 @@ function renderWagons() {
         });
 
         wagonEl.onclick = () => {
-            if (!selectedAnimalId) return;
+            if (!st.selectedAnimalId) return;
             if (placedAnimals.length >= wagon.capacity) {
                 alert("Gerbong ini sudah penuh!");
                 return;
             }
-            placements[selectedAnimalId] = wagon.id;
-            selectedAnimalId = null;
+            st.placements[st.selectedAnimalId] = wagon.id;
+            st.selectedAnimalId = null;
             renderPool();
             renderWagons();
             updateCounter();
@@ -454,82 +821,239 @@ function renderWagons() {
 }
 
 function updateCounter() {
-    const placedCount = Object.keys(placements).length;
-    const remaining = animalsData.length - placedCount;
+    const lvl = currentLevel();
+    const st = currentState();
+    if (!lvl || !st) return;
+    const placedCount = Object.keys(st.placements).length;
+    const remaining = lvl.animals.length - placedCount;
     poolCounterEl.innerText = `Tersisa: ${remaining} Hewan`;
 }
 
+function resetCurrentLevel() {
+    const lvl = currentLevel();
+    const st = currentState();
+    if (!lvl || !st) return;
+    st.placements = {};
+    st.selectedAnimalId = null;
+    st.shuffledAnimals = shuffle(lvl.animals);
+    treeSectionEl.classList.add('hidden');
+    treeCanvasEl.innerHTML = "";
+    nextLevelBarEl.innerHTML = "";
+    renderPool();
+    renderWagons();
+    updateCounter();
+}
+
 function runTrainAndBuildTree() {
-    const placedCount = Object.keys(placements).length;
-    if (placedCount < animalsData.length) {
-        alert("Harap masukkan seluruh 10 hewan ke dalam gerbong terlebih dahulu!");
+    const lvl = currentLevel();
+    const st = currentState();
+    if (!lvl || !st) return;
+
+    const placedCount = Object.keys(st.placements).length;
+    if (placedCount < lvl.animals.length) {
+        alert(`Harap masukkan seluruh ${lvl.animals.length} hewan ke dalam gerbong terlebih dahulu!`);
         return;
     }
 
     let correctCount = 0;
-    animalsData.forEach(a => {
-        if (placements[a.id] === a.wagonId) correctCount++;
+    lvl.animals.forEach(a => {
+        if (st.placements[a.id] === a.wagonId) correctCount++;
     });
+
+    st.completed = true;
+    if (correctCount > st.bestScore) st.bestScore = correctCount;
 
     treeSectionEl.classList.remove('hidden');
     treeSectionEl.scrollIntoView({ behavior: 'smooth' });
 
-    if (correctCount === animalsData.length) {
-        treeStatusMsgEl.innerHTML = `<strong>Sempurna! (10/10 Tepat)</strong><br>Seluruh gerbong terisi sesuai takson. Pohon Filogeni berhasil terhubung sempurna!`;
+    if (correctCount === lvl.animals.length) {
+        treeStatusMsgEl.innerHTML = `<strong>Sempurna! (${correctCount}/${lvl.animals.length} Tepat)</strong><br>Seluruh gerbong terisi sesuai takson. Pohon Filogeni berhasil terhubung sempurna!`;
     } else {
-        treeStatusMsgEl.innerHTML = `<strong>Hasil: ${correctCount} dari 10 Tepat</strong><br>Beberapa hewan diletakkan di gerbong yang belum pas. Perhatikan cabang pohon di bawah:`;
+        treeStatusMsgEl.innerHTML = `<strong>Hasil: ${correctCount} dari ${lvl.animals.length} Tepat</strong><br>Ini adalah pohon filogeni yang benar — bandingkan dengan susunan gerbongmu di atas.`;
     }
 
-    renderSVGPhylogenyTree();
+    renderPhylogenyTreeSVG(lvl);
+    renderNextLevelBar(lvl);
 }
 
-function renderSVGPhylogenyTree() {
-    treeCanvasEl.innerHTML = `
-        <svg width="100%" height="100%" viewBox="0 0 750 380" xmlns="http://www.w3.org/2000/svg">
-            <style>
-                .line-main { stroke: #333333; stroke-width: 2.5; fill: none; }
-                .node-text { fill: #111111; font-size: 11px; font-weight: bold; }
-                .latin-text { fill: #555555; font-size: 10px; font-style: italic; }
-                .group-label { fill: #000000; font-size: 11px; font-weight: bold; }
-            </style>
+function renderNextLevelBar(lvl) {
+    nextLevelBarEl.innerHTML = "";
 
-            <path d="M 20 190 L 80 190" class="line-main" />
-            <text x="10" y="210" class="node-text">Nenek Moyang Bersama</text>
+    const mapBtn = document.createElement('button');
+    mapBtn.type = 'button';
+    mapBtn.className = 'btn';
+    mapBtn.textContent = '🗺️ Kembali ke Peta Level';
+    mapBtn.onclick = showLevelMap;
+    nextLevelBarEl.appendChild(mapBtn);
 
-            <path d="M 80 190 L 80 100 L 150 100" class="line-main" />
-            <text x="90" y="90" class="group-label">Famili Felidae</text>
-
-            <path d="M 150 100 L 150 40 L 250 40" class="line-main" />
-            <text x="260" y="44" class="node-text">🐅 Harimau, 🦁 Singa, 🐆 Jaguar <tspan class="latin-text">(Genus Panthera)</tspan></text>
-
-            <path d="M 150 100 L 250 100" class="line-main" />
-            <text x="260" y="104" class="node-text">🎷 Cheetah <tspan class="latin-text">(Genus Acinonyx)</tspan></text>
-
-            <path d="M 150 100 L 150 150 L 250 150" class="line-main" />
-            <text x="260" y="154" class="node-text">🐈 Kucing Bengal <tspan class="latin-text">(Genus Prionailurus)</tspan></text>
-
-            <path d="M 80 190 L 80 280 L 150 280" class="line-main" />
-            <text x="90" y="295" class="group-label">Famili Cercopithecidae</text>
-
-            <path d="M 150 280 L 150 220 L 250 220" class="line-main" />
-            <text x="260" y="224" class="node-text">🐒 Beruk & 🐵 Monyet Ekor Panjang <tspan class="latin-text">(Genus Macaca)</tspan></text>
-
-            <path d="M 150 280 L 250 260" class="line-main" />
-            <text x="260" y="264" class="node-text">🦧 Babon Anubis <tspan class="latin-text">(Genus Papio)</tspan></text>
-
-            <path d="M 150 280 L 150 310 L 250 310" class="line-main" />
-            <text x="260" y="314" class="node-text">🦍 Lutung Kelabu <tspan class="latin-text">(Genus Trachypithecus)</tspan></text>
-
-            <path d="M 150 280 L 150 350 L 250 350" class="line-main" />
-            <text x="260" y="354" class="node-text">🦥 Surili <tspan class="latin-text">(Kelompok Presbytini)</tspan></text>
-        </svg>
-    `;
+    const idx = LEVELS.findIndex(l => l.id === lvl.id);
+    const nextLvl = LEVELS[idx + 1];
+    if (nextLvl) {
+        const nextBtn = document.createElement('button');
+        nextBtn.type = 'button';
+        nextBtn.className = 'btn btn-run';
+        nextBtn.textContent = `➡️ Lanjut ke ${nextLvl.title}`;
+        nextBtn.onclick = () => openLevel(nextLvl.id);
+        nextLevelBarEl.appendChild(nextBtn);
+    }
 }
 
-document.getElementById('btn-reset').onclick = initGame;
+/* =========================================================
+   PENYUSUN POHON FILOGENI (SVG) — dihitung otomatis
+   agar tetap rapi untuk semua level (10, 15, atau 25 hewan).
+   ========================================================= */
+
+function computeTreeLayout(lvl) {
+    const rowHeight = 22;
+    const topMargin = 26;
+    const bottomMargin = 16;
+
+    // kelompokkan gerbong berdasarkan famili, sesuai urutan pada data level
+    const familyOrder = [];
+    const familyMap = {};
+    lvl.wagons.forEach(w => {
+        if (!familyMap[w.familyId]) {
+            familyMap[w.familyId] = { id: w.familyId, label: familyLabels[w.familyId] || w.familyId, wagons: [] };
+            familyOrder.push(w.familyId);
+        }
+        familyMap[w.familyId].wagons.push(w);
+    });
+
+    let rowIndex = 0;
+    const families = familyOrder.map(fid => familyMap[fid]);
+
+    families.forEach(fam => {
+        fam.wagons.forEach(w => {
+            const speciesList = lvl.animals.filter(a => a.wagonId === w.id);
+            w.speciesRows = speciesList.map(sp => {
+                const y = topMargin + rowIndex * rowHeight;
+                rowIndex++;
+                return { name: sp.name, latin: sp.latin, emoji: sp.emoji, y: y };
+            });
+            const ys = w.speciesRows.map(r => r.y);
+            w.yMin = Math.min.apply(null, ys);
+            w.yMax = Math.max.apply(null, ys);
+            w.y = (w.yMin + w.yMax) / 2;
+        });
+        const wys = fam.wagons.map(w => w.y);
+        fam.yMin = Math.min.apply(null, wys);
+        fam.yMax = Math.max.apply(null, wys);
+        fam.y = (fam.yMin + fam.yMax) / 2;
+    });
+
+    const famYs = families.map(f => f.y);
+    const rootY = (Math.min.apply(null, famYs) + Math.max.apply(null, famYs)) / 2;
+
+    const totalHeight = topMargin + rowIndex * rowHeight + bottomMargin;
+
+    return { families: families, rootY: rootY, totalHeight: totalHeight };
+}
+
+function escapeXML(str) {
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+function renderPhylogenyTreeSVG(lvl) {
+    const layout = computeTreeLayout(lvl);
+    const families = layout.families;
+    const rootY = layout.rootY;
+    const totalHeight = Math.max(layout.totalHeight, 120);
+
+    const svgWidth = 750;
+    const xRoot = 20;
+    const xFamStub = 90;   // batang vertikal famili
+    const xGenusStub = 190; // batang vertikal genus
+    const xLeafStub = 300;  // batang menuju teks spesies
+    const xText = 310;
+
+    let parts = [];
+
+    parts.push(`
+        <style>
+            .line-main { stroke: #333333; stroke-width: 2.2; fill: none; }
+            .node-text { fill: #111111; font-size: 10.5px; font-weight: bold; }
+            .latin-text { fill: #555555; font-size: 9.5px; font-style: italic; }
+            .group-label { fill: #000000; font-size: 10.5px; font-weight: bold; }
+        </style>
+    `);
+
+    // batang akar ke titik cabang famili
+    parts.push(`<text x="4" y="${rootY - 8}" class="node-text">Nenek Moyang Bersama</text>`);
+    parts.push(`<path d="M ${xRoot} ${rootY} L ${xFamStub} ${rootY}" class="line-main" />`);
+
+    // batang vertikal yang menghubungkan seluruh famili (menyatu jika hanya 1 famili)
+    parts.push(`<path d="M ${xFamStub} ${families[0].y} L ${xFamStub} ${families[families.length - 1].y}" class="line-main" />`);
+
+    families.forEach(fam => {
+        // cabang horizontal dari batang famili menuju batang genus famili ini
+        parts.push(`<path d="M ${xFamStub} ${fam.y} L ${xFamStub + 60} ${fam.y}" class="line-main" />`);
+        parts.push(`<text x="${xFamStub + 8}" y="${fam.yMin - 8}" class="group-label">${escapeXML(fam.label)}</text>`);
+
+        const genusX = xFamStub + 60;
+        // batang vertikal genus dalam famili ini
+        parts.push(`<path d="M ${genusX} ${fam.wagons[0].y} L ${genusX} ${fam.wagons[fam.wagons.length - 1].y}" class="line-main" />`);
+
+        fam.wagons.forEach(w => {
+            parts.push(`<path d="M ${genusX} ${w.y} L ${xGenusStub} ${w.y}" class="line-main" />`);
+            parts.push(`<text x="${genusX + 6}" y="${w.yMin - 6}" class="group-label">${escapeXML(w.title)}</text>`);
+
+            // batang vertikal spesies dalam genus ini
+            parts.push(`<path d="M ${xGenusStub} ${w.yMin} L ${xGenusStub} ${w.yMax}" class="line-main" />`);
+
+            w.speciesRows.forEach(sp => {
+                parts.push(`<path d="M ${xGenusStub} ${sp.y} L ${xLeafStub} ${sp.y}" class="line-main" />`);
+                parts.push(`<text x="${xText}" y="${sp.y + 4}" class="node-text">${sp.emoji} ${escapeXML(sp.name)} <tspan class="latin-text">(${escapeXML(sp.latin)})</tspan></text>`);
+            });
+        });
+    });
+
+    const svg = `<svg width="${svgWidth}" height="${totalHeight}" viewBox="0 0 ${svgWidth} ${totalHeight}" xmlns="http://www.w3.org/2000/svg">${parts.join("")}</svg>`;
+
+    treeCanvasEl.style.maxHeight = "560px";
+    treeCanvasEl.innerHTML = svg;
+}
+
+/* =========================================================
+   TIMER 30 MENIT (informatif, tidak mengunci permainan)
+   ========================================================= */
+
+let secondsLeft = 30 * 60;
+let timerHasEnded = false;
+
+function formatTime(totalSeconds) {
+    const s = Math.max(0, totalSeconds);
+    const m = Math.floor(s / 60);
+    const r = s % 60;
+    return `${m}:${r < 10 ? '0' : ''}${r}`;
+}
+
+function tickTimer() {
+    if (secondsLeft <= 0) {
+        if (!timerHasEnded) {
+            timerHasEnded = true;
+            timerBadgeEl.textContent = "⏰ Waktu 30 menit selesai — boleh lanjut bermain!";
+            timerBadgeEl.classList.add('time-up');
+        }
+        return;
+    }
+    secondsLeft--;
+    timerBadgeEl.textContent = `⏳ ${formatTime(secondsLeft)}`;
+}
+
+setInterval(tickTimer, 1000);
+
+/* =========================================================
+   EVENT & INISIALISASI
+   ========================================================= */
+
+document.getElementById('btn-reset').onclick = resetCurrentLevel;
 document.getElementById('btn-run').onclick = runTrainAndBuildTree;
+document.getElementById('btn-back-map').onclick = showLevelMap;
 
-initGame();
+showLevelMap();
 </script>
 </body>
 </html>
