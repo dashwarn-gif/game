@@ -418,6 +418,105 @@
             justify-content: center;
             flex-wrap: wrap;
         }
+
+        /* ===== Spesies Invasif: Tangkap & Lempar ke Kandang ===== */
+        .invasive-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 1000;
+        }
+
+        .invasive-banner {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #b30000;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+            max-width: 90%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+        }
+
+        .quarantine-cage {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            width: 92px;
+            height: 92px;
+            background: #ffffff;
+            border: 3px dashed #b30000;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            animation: cage-blink 1s infinite;
+        }
+
+        .cage-emoji {
+            font-size: 2rem;
+        }
+
+        .cage-label {
+            font-size: 0.58rem;
+            font-weight: bold;
+            color: #b30000;
+            text-align: center;
+            line-height: 1.15;
+        }
+
+        @keyframes cage-blink {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(179, 0, 0, 0.5); }
+            50% { opacity: 0.55; box-shadow: 0 0 0 10px rgba(179, 0, 0, 0); }
+        }
+
+        .floating-invasive-card {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 130px;
+            background: #ffecec;
+            border: 3px solid #b30000;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            cursor: grab;
+            touch-action: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+        }
+
+        .floating-invasive-card:active {
+            cursor: grabbing;
+        }
+
+        .floating-invasive-card .animal-emoji {
+            font-size: 2rem;
+        }
+
+        .floating-invasive-card .animal-name {
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: #b30000;
+            text-align: center;
+        }
+
+        .floating-invasive-card .animal-latin {
+            font-size: 0.68rem;
+            font-style: italic;
+            color: var(--text-sub);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -477,6 +576,22 @@
     </div>
 </div>
 
+<!-- ===== TANTANGAN SPESIES INVASIF: TANGKAP & LEMPAR KE KANDANG ===== -->
+<div class="invasive-overlay hidden" id="invasive-overlay">
+    <div class="invasive-banner">⚠️ Spesies Invasif! Seret ke kandang dalam <span id="invasive-countdown">5</span> detik!</div>
+
+    <div class="quarantine-cage" id="quarantine-cage">
+        <span class="cage-emoji">📦</span>
+        <span class="cage-label">Kandang<br>Karantina</span>
+    </div>
+
+    <div class="floating-invasive-card" id="floating-invasive-card">
+        <span class="animal-emoji" id="floating-card-emoji"></span>
+        <span class="animal-name" id="floating-card-name"></span>
+        <span class="animal-latin" id="floating-card-latin"></span>
+    </div>
+</div>
+
 <script>
 /* =========================================================
    DATA HEWAN — diambil dari catatan papan tulis:
@@ -486,10 +601,10 @@
    ========================================================= */
 
 const felidaeWagons = [
-    { id: "leopardus", title: "Genus Leopardus", capacity: 1, familyId: "fel" },
-    { id: "acinonyx", title: "Genus Acinonyx", capacity: 2, familyId: "fel" },
-    { id: "panthera", title: "Genus Panthera", capacity: 5, familyId: "fel" },
-    { id: "prionailurus", title: "Genus Prionailurus", capacity: 2, familyId: "fel" }
+    { id: "leopardus", title: "Kucing Kecil Amerika (Pupil Vertikal, Totol Rapat)", capacity: 1, familyId: "fel" },
+    { id: "acinonyx", title: "Pelari Tercepat (Cakar Semi-Permanen Keluar)", capacity: 2, familyId: "fel" },
+    { id: "panthera", title: "Kucing Besar (Bisa Meraung, Tulang Hioid Fleksibel)", capacity: 5, familyId: "fel" },
+    { id: "prionailurus", title: "Kucing Kecil Asia (Tubuh Mungil, Corak Totol Solid)", capacity: 2, familyId: "fel" }
 ];
 
 const felidaeAnimals = [
@@ -506,11 +621,11 @@ const felidaeAnimals = [
 ];
 
 const cercoWagons = [
-    { id: "macaca", title: "Genus Macaca (Kera)", capacity: 5, familyId: "cer" },
-    { id: "papio", title: "Genus Papio (Babon)", capacity: 3, familyId: "cer" },
-    { id: "trachypithecus", title: "Genus Trachypithecus (Lutung)", capacity: 3, familyId: "cer" },
-    { id: "colobinae", title: "Sub-famili Colobinae (Monyet)", capacity: 3, familyId: "cer" },
-    { id: "presbytini", title: "Presbytini (Surili)", capacity: 1, familyId: "cer" }
+    { id: "macaca", title: "Kera Dunia Lama (Pipi Mengantong / Cheek Pouches)", capacity: 5, familyId: "cer" },
+    { id: "papio", title: "Moncong Memanjang Seperti Anjing (Bantalan Duduk Menyatu)", capacity: 3, familyId: "cer" },
+    { id: "trachypithecus", title: "Pemakan Daun (Lambung Bersekat Ganda)", capacity: 3, familyId: "cer" },
+    { id: "colobinae", title: "Monyet Daun (Ibu Jari Tereduksi / Nyaris Hilang)", capacity: 3, familyId: "cer" },
+    { id: "presbytini", title: "Monyet Berjambul (Ekor Sangat Panjang, Pemanjat Lincah)", capacity: 1, familyId: "cer" }
 ];
 
 const cercoAnimals = [
@@ -536,18 +651,28 @@ const familyLabels = {
     cer: "Famili Cercopithecidae"
 };
 
+// Hewan "nyasar" yang tidak termasuk famili/genus manapun yang sedang dipelajari.
+// Dipakai untuk memicu peringatan "Spesies Invasif" di tengah permainan.
+const invasiveCreatures = [
+    { name: "Katak Pohon", latin: "Litoria caerulea", emoji: "🐸" },
+    { name: "Ular Piton", latin: "Python reticulatus", emoji: "🐍" },
+    { name: "Kalajengking", latin: "Heterometrus sp.", emoji: "🦂" },
+    { name: "Burung Beo", latin: "Psittacus erithacus", emoji: "🦜" },
+    { name: "Kupu-kupu", latin: "Papilio sp.", emoji: "🦋" }
+];
+
 const LEVELS = [
     {
         id: 1,
         title: "Level 1 · Famili Felidae",
-        desc: "10 kucing besar & kecil. Kelompokkan ke dalam 4 genus yang tepat.",
+        desc: "10 kucing besar & kecil. Kelompokkan ke dalam 4 kelompok ciri yang tepat.",
         wagons: felidaeWagons,
         animals: felidaeAnimals
     },
     {
         id: 2,
         title: "Level 2 · Famili Cercopithecidae",
-        desc: "15 primata Dunia Lama. Kelompokkan ke dalam 5 genus/kelompok.",
+        desc: "15 primata Dunia Lama. Kelompokkan ke dalam 5 kelompok ciri yang tepat.",
         wagons: cercoWagons,
         animals: cercoAnimals
     },
@@ -565,15 +690,25 @@ const LEVELS = [
    ========================================================= */
 
 // state per level, disimpan di memori selama sesi berjalan
+function initInvasiveState() {
+    return {
+        invasiveSpawnsRemaining: randomInt(1, 2),
+        nextSpawnThreshold: randomInt(2, 4),
+        activeInvasiveCard: null,
+        invasiveTimerId: null,
+        invasiveSecondsLeft: 0
+    };
+}
+
 const levelState = {};
 LEVELS.forEach(lvl => {
-    levelState[lvl.id] = {
+    levelState[lvl.id] = Object.assign({
         shuffledAnimals: shuffle(lvl.animals),
         placements: {},
         selectedAnimalId: null,
         completed: false,
         bestScore: 0
-    };
+    }, initInvasiveState());
 });
 
 let currentLevelId = null; // null = di peta level
@@ -594,6 +729,13 @@ const treeSectionEl = document.getElementById('tree-section');
 const treeCanvasEl = document.getElementById('tree-canvas');
 const treeStatusMsgEl = document.getElementById('tree-status-msg');
 const nextLevelBarEl = document.getElementById('next-level-bar');
+const invasiveOverlayEl = document.getElementById('invasive-overlay');
+const invasiveCountdownEl = document.getElementById('invasive-countdown');
+const quarantineCageEl = document.getElementById('quarantine-cage');
+const floatingCardEl = document.getElementById('floating-invasive-card');
+const floatingCardEmojiEl = document.getElementById('floating-card-emoji');
+const floatingCardNameEl = document.getElementById('floating-card-name');
+const floatingCardLatinEl = document.getElementById('floating-card-latin');
 
 /* =========================================================
    UTILITAS
@@ -608,6 +750,10 @@ function shuffle(array) {
         arr[j] = tmp;
     }
     return arr;
+}
+
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function getLevelById(id) {
@@ -705,6 +851,14 @@ function openLevel(levelId) {
     renderPool();
     renderWagons();
     updateCounter();
+
+    // pengaman: bersihkan sisa tantangan invasif yang belum sempat terselesaikan
+    if (st.invasiveTimerId) {
+        clearInterval(st.invasiveTimerId);
+        st.invasiveTimerId = null;
+    }
+    st.activeInvasiveCard = null;
+    hideInvasiveChallenge();
 }
 
 function currentLevel() {
@@ -721,6 +875,7 @@ function renderPool() {
     if (!lvl || !st) return;
 
     poolEl.innerHTML = "";
+
     st.shuffledAnimals.forEach(animal => {
         const isPlaced = !!st.placements[animal.id];
         const isSelected = st.selectedAnimalId === animal.id;
@@ -795,6 +950,7 @@ function renderWagons() {
             renderPool();
             renderWagons();
             updateCounter();
+            maybeSpawnInvasive();
         };
 
         trainContainerEl.appendChild(wagonEl);
@@ -817,6 +973,12 @@ function resetCurrentLevel() {
     st.placements = {};
     st.selectedAnimalId = null;
     st.shuffledAnimals = shuffle(lvl.animals);
+    if (st.invasiveTimerId) {
+        clearInterval(st.invasiveTimerId);
+        st.invasiveTimerId = null;
+    }
+    Object.assign(st, initInvasiveState());
+    hideInvasiveChallenge();
     treeSectionEl.classList.add('hidden');
     treeCanvasEl.innerHTML = "";
     nextLevelBarEl.innerHTML = "";
@@ -998,12 +1160,199 @@ function renderPhylogenyTreeSVG(lvl) {
 }
 
 /* =========================================================
+   MEKANIK SPESIES INVASIF — TANGKAP & LEMPAR KE KANDANG
+   Saat pemain sedang menempatkan hewan, sesekali muncul kartu
+   hewan yang tidak termasuk famili/genus manapun yang sedang
+   dipelajari, melayang di tengah layar. Pemain harus menyeretnya
+   ke kandang karantina dalam 5 detik. Jika telat, hewan itu
+   mengacak satu gerbong: satu hewan yang sudah benar dikembalikan
+   ke pool.
+   ========================================================= */
+
+function maybeSpawnInvasive() {
+    const st = currentState();
+    const lvl = currentLevel();
+    if (!st || !lvl) return;
+    if (st.activeInvasiveCard) return; // masih ada tantangan yang berjalan
+    if (st.invasiveSpawnsRemaining <= 0) return;
+
+    const placedCount = Object.keys(st.placements).length;
+    if (placedCount < st.nextSpawnThreshold) return;
+    if (placedCount >= lvl.animals.length) return; // jangan muncul saat semua hewan sudah tertempatkan
+
+    spawnInvasiveChallenge(currentLevelId);
+}
+
+function spawnInvasiveChallenge(levelId) {
+    const st = levelState[levelId];
+    if (!st) return;
+
+    const creature = invasiveCreatures[randomInt(0, invasiveCreatures.length - 1)];
+    const card = {
+        id: 'inv_' + Date.now() + '_' + randomInt(100, 999),
+        name: creature.name,
+        latin: creature.latin,
+        emoji: creature.emoji
+    };
+
+    st.activeInvasiveCard = card;
+    st.invasiveSpawnsRemaining--;
+    st.invasiveSecondsLeft = 3;
+
+    if (currentLevelId === levelId) {
+        showInvasiveChallenge(card);
+    }
+
+    if (st.invasiveTimerId) clearInterval(st.invasiveTimerId);
+    st.invasiveTimerId = setInterval(() => {
+        st.invasiveSecondsLeft--;
+        if (currentLevelId === levelId && invasiveCountdownEl) {
+            invasiveCountdownEl.textContent = String(Math.max(0, st.invasiveSecondsLeft));
+        }
+        if (st.invasiveSecondsLeft <= 0) {
+            clearInterval(st.invasiveTimerId);
+            st.invasiveTimerId = null;
+            handleInvasiveTimeout(levelId);
+        }
+    }, 1000);
+}
+
+function showInvasiveChallenge(card) {
+    floatingCardEmojiEl.textContent = card.emoji;
+    floatingCardNameEl.textContent = card.name;
+    floatingCardLatinEl.textContent = `(${card.latin})`;
+    floatingCardEl.style.left = '';
+    floatingCardEl.style.top = '';
+    floatingCardEl.style.transform = '';
+    invasiveCountdownEl.textContent = '5';
+    invasiveOverlayEl.classList.remove('hidden');
+}
+
+function hideInvasiveChallenge() {
+    invasiveOverlayEl.classList.add('hidden');
+    floatingCardEl.style.left = '';
+    floatingCardEl.style.top = '';
+    floatingCardEl.style.transform = '';
+}
+
+function handleInvasiveSuccess(levelId) {
+    const st = levelState[levelId];
+    if (!st || !st.activeInvasiveCard) return;
+
+    if (st.invasiveTimerId) {
+        clearInterval(st.invasiveTimerId);
+        st.invasiveTimerId = null;
+    }
+    st.activeInvasiveCard = null;
+    st.nextSpawnThreshold = Object.keys(st.placements).length + randomInt(2, 4);
+
+    if (currentLevelId === levelId) {
+        hideInvasiveChallenge();
+    }
+}
+
+function handleInvasiveTimeout(levelId) {
+    const lvl = getLevelById(levelId);
+    const st = levelState[levelId];
+    if (!lvl || !st || !st.activeInvasiveCard) return;
+
+    // hewan invasif kabur dan mengacak satu gerbong: satu hewan yang sudah benar dikembalikan ke pool
+    const correctlyPlacedIds = lvl.animals
+        .filter(a => st.placements[a.id] === a.wagonId)
+        .map(a => a.id);
+
+    let messedUpAnimal = null;
+    if (correctlyPlacedIds.length > 0) {
+        const pickId = correctlyPlacedIds[randomInt(0, correctlyPlacedIds.length - 1)];
+        messedUpAnimal = lvl.animals.find(a => a.id === pickId) || null;
+        delete st.placements[pickId];
+    }
+
+    st.activeInvasiveCard = null;
+    st.nextSpawnThreshold = Object.keys(st.placements).length + randomInt(2, 4);
+
+    if (currentLevelId === levelId) {
+        hideInvasiveChallenge();
+        renderPool();
+        renderWagons();
+        updateCounter();
+
+        if (messedUpAnimal) {
+            alert(`⏰ Waktu habis! Hewan invasif kabur dan mengacak gerbong — ${messedUpAnimal.emoji} ${messedUpAnimal.name} terlempar kembali ke pool.`);
+        } else {
+            alert('⏰ Waktu habis! Hewan invasif kabur, tapi untungnya belum ada gerbong yang diacak.');
+        }
+    }
+}
+
+/* ---- Seret-lepas kartu invasif ke kandang karantina (mouse & sentuh) ---- */
+
+const invasiveDragState = { active: false, pointerId: null, offsetX: 0, offsetY: 0 };
+
+function onFloatingCardPointerDown(e) {
+    if (floatingCardEl.classList.contains('hidden')) return;
+    if (invasiveOverlayEl.classList.contains('hidden')) return;
+
+    invasiveDragState.active = true;
+    invasiveDragState.pointerId = e.pointerId;
+
+    const rect = floatingCardEl.getBoundingClientRect();
+    invasiveDragState.offsetX = e.clientX - rect.left;
+    invasiveDragState.offsetY = e.clientY - rect.top;
+
+    floatingCardEl.style.left = rect.left + 'px';
+    floatingCardEl.style.top = rect.top + 'px';
+    floatingCardEl.style.transform = 'none';
+
+    try { floatingCardEl.setPointerCapture(e.pointerId); } catch (err) { /* aman diabaikan */ }
+    e.preventDefault();
+}
+
+function onWindowPointerMove(e) {
+    if (!invasiveDragState.active) return;
+    const x = e.clientX - invasiveDragState.offsetX;
+    const y = e.clientY - invasiveDragState.offsetY;
+    floatingCardEl.style.left = x + 'px';
+    floatingCardEl.style.top = y + 'px';
+}
+
+function onWindowPointerUp(e) {
+    if (!invasiveDragState.active) return;
+    invasiveDragState.active = false;
+
+    try { floatingCardEl.releasePointerCapture(invasiveDragState.pointerId); } catch (err) { /* aman diabaikan */ }
+
+    const cardRect = floatingCardEl.getBoundingClientRect();
+    const cageRect = quarantineCageEl.getBoundingClientRect();
+    const overlap = !(
+        cardRect.right < cageRect.left ||
+        cardRect.left > cageRect.right ||
+        cardRect.bottom < cageRect.top ||
+        cardRect.top > cageRect.bottom
+    );
+
+    if (overlap && currentLevelId !== null) {
+        handleInvasiveSuccess(currentLevelId);
+    } else {
+        // belum masuk kandang, kartu kembali ke tengah agar bisa dicoba lagi sebelum waktu habis
+        floatingCardEl.style.left = '';
+        floatingCardEl.style.top = '';
+        floatingCardEl.style.transform = '';
+    }
+}
+
+/* =========================================================
    EVENT & INISIALISASI
    ========================================================= */
 
 document.getElementById('btn-reset').onclick = resetCurrentLevel;
 document.getElementById('btn-run').onclick = runTrainAndBuildTree;
 document.getElementById('btn-back-map').onclick = showLevelMap;
+
+floatingCardEl.addEventListener('pointerdown', onFloatingCardPointerDown);
+window.addEventListener('pointermove', onWindowPointerMove);
+window.addEventListener('pointerup', onWindowPointerUp);
+window.addEventListener('pointercancel', onWindowPointerUp);
 
 showLevelMap();
 </script>
