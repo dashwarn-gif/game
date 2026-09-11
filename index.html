@@ -692,11 +692,11 @@ const LEVELS = [
 // state per level, disimpan di memori selama sesi berjalan
 function initInvasiveState() {
     return {
-        invasiveSpawnsRemaining: randomInt(1, 2),
-        nextSpawnThreshold: randomInt(2, 4),
+        invasiveScheduleId: null,   // id setTimeout untuk kemunculan berikutnya
         activeInvasiveCard: null,
-        invasiveTimerId: null,
-        invasiveSecondsLeft: 0
+        invasiveTimerId: null,      // id setInterval untuk hitung mundur 3 detik
+        invasiveSecondsLeft: 0,
+        invasiveActive: true        // false setelah level selesai dijalankan (Jalankan & Rakit Pohon)
     };
 }
 
@@ -825,6 +825,9 @@ function renderSummaryBox() {
 }
 
 function showLevelMap() {
+    if (currentLevelId !== null) {
+        pauseInvasiveScheduling(currentLevelId);
+    }
     currentLevelId = null;
     playSectionEl.classList.add('hidden');
     levelMapSectionEl.classList.remove('hidden');
@@ -836,6 +839,10 @@ function showLevelMap() {
    ========================================================= */
 
 function openLevel(levelId) {
+    if (currentLevelId !== null && currentLevelId !== levelId) {
+        pauseInvasiveScheduling(currentLevelId);
+    }
+
     currentLevelId = levelId;
     const lvl = getLevelById(levelId);
     const st = levelState[levelId];
@@ -859,6 +866,9 @@ function openLevel(levelId) {
     }
     st.activeInvasiveCard = null;
     hideInvasiveChallenge();
+
+    // mulai/lanjutkan siklus kemunculan spesies invasif yang acak & tak terduga untuk level ini
+    scheduleNextInvasive(levelId);
 }
 
 function currentLevel() {
@@ -950,7 +960,6 @@ function renderWagons() {
             renderPool();
             renderWagons();
             updateCounter();
-            maybeSpawnInvasive();
         };
 
         trainContainerEl.appendChild(wagonEl);
@@ -977,6 +986,10 @@ function resetCurrentLevel() {
         clearInterval(st.invasiveTimerId);
         st.invasiveTimerId = null;
     }
+    if (st.invasiveScheduleId) {
+        clearTimeout(st.invasiveScheduleId);
+        st.invasiveScheduleId = null;
+    }
     Object.assign(st, initInvasiveState());
     hideInvasiveChallenge();
     treeSectionEl.classList.add('hidden');
@@ -985,6 +998,7 @@ function resetCurrentLevel() {
     renderPool();
     renderWagons();
     updateCounter();
+    scheduleNextInvasive(currentLevelId);
 }
 
 function runTrainAndBuildTree() {
@@ -1005,6 +1019,7 @@ function runTrainAndBuildTree() {
 
     st.completed = true;
     if (correctCount > st.bestScore) st.bestScore = correctCount;
+    st.invasiveActive = false;
 
     treeSectionEl.classList.remove('hidden');
     treeSectionEl.scrollIntoView({ behavior: 'smooth' });
@@ -1161,26 +1176,61 @@ function renderPhylogenyTreeSVG(lvl) {
 
 /* =========================================================
    MEKANIK SPESIES INVASIF — TANGKAP & LEMPAR KE KANDANG
-   Saat pemain sedang menempatkan hewan, sesekali muncul kartu
-   hewan yang tidak termasuk famili/genus manapun yang sedang
-   dipelajari, melayang di tengah layar. Pemain harus menyeretnya
-   ke kandang karantina dalam 3 detik. Jika telat, hewan itu
-   mengacak satu gerbong: satu hewan yang sudah benar dikembalikan
-   ke pool.
+   Kartu hewan yang tidak termasuk famili/genus manapun yang
+   sedang dipelajari muncul berkali-kali di waktu yang acak dan
+   tak terduga selama level masih berjalan. Begitu muncul, pemain
+   hanya punya 3 detik untuk menyeretnya ke kandang karantina.
+   Jika telat, hewan itu mengacak satu gerbong: satu hewan yang
+   sudah benar dikembalikan ke pool.
    ========================================================= */
 
-function maybeSpawnInvasive() {
-    const st = currentState();
-    const lvl = currentLevel();
+function pauseInvasiveScheduling(levelId) {
+    const st = levelState[levelId];
+    if (!st) return;
+    if (st.invasiveScheduleId) {
+        clearTimeout(st.invasiveScheduleId);
+        st.invasiveScheduleId = null;
+    }
+}
+
+function scheduleNextInvasive(levelId) {
+    const st = levelState[levelId];
+    if (!st) return;
+
+    if (st.invasiveScheduleId) {
+        clearTimeout(st.invasiveScheduleId);
+        st.invasiveScheduleId = null;
+    }
+    if (!st.invasiveActive) return;
+
+    // jeda acak 6–15 detik agar kemunculannya benar-benar tak terduga
+    const delay = randomInt(6000, 15000);
+    st.invasiveScheduleId = setTimeout(() => {
+        st.invasiveScheduleId = null;
+        trySpawnInvasive(levelId);
+    }, delay);
+}
+
+function trySpawnInvasive(levelId) {
+    const st = levelState[levelId];
+    const lvl = getLevelById(levelId);
     if (!st || !lvl) return;
-    if (st.activeInvasiveCard) return; // masih ada tantangan yang berjalan
-    if (st.invasiveSpawnsRemaining <= 0) return;
+    if (!st.invasiveActive) return;
+
+    if (st.activeInvasiveCard) {
+        // seharusnya jarang terjadi, tapi jaga-jaga: coba lagi nanti
+        scheduleNextInvasive(levelId);
+        return;
+    }
 
     const placedCount = Object.keys(st.placements).length;
-    if (placedCount < st.nextSpawnThreshold) return;
-    if (placedCount >= lvl.animals.length) return; // jangan muncul saat semua hewan sudah tertempatkan
+    if (placedCount >= lvl.animals.length) {
+        // semua hewan sudah tertempatkan, coba lagi nanti siapa tahu pemain mengeluarkan hewan dari gerbong
+        scheduleNextInvasive(levelId);
+        return;
+    }
 
-    spawnInvasiveChallenge(currentLevelId);
+    spawnInvasiveChallenge(levelId);
 }
 
 function spawnInvasiveChallenge(levelId) {
@@ -1196,7 +1246,6 @@ function spawnInvasiveChallenge(levelId) {
     };
 
     st.activeInvasiveCard = card;
-    st.invasiveSpawnsRemaining--;
     st.invasiveSecondsLeft = 3;
 
     if (currentLevelId === levelId) {
@@ -1224,7 +1273,7 @@ function showInvasiveChallenge(card) {
     floatingCardEl.style.left = '';
     floatingCardEl.style.top = '';
     floatingCardEl.style.transform = '';
-    invasiveCountdownEl.textContent = '5';
+    invasiveCountdownEl.textContent = '3';
     invasiveOverlayEl.classList.remove('hidden');
 }
 
@@ -1244,11 +1293,13 @@ function handleInvasiveSuccess(levelId) {
         st.invasiveTimerId = null;
     }
     st.activeInvasiveCard = null;
-    st.nextSpawnThreshold = Object.keys(st.placements).length + randomInt(2, 4);
 
     if (currentLevelId === levelId) {
         hideInvasiveChallenge();
     }
+
+    // jadwalkan kemunculan berikutnya, tetap acak & tak terduga
+    scheduleNextInvasive(levelId);
 }
 
 function handleInvasiveTimeout(levelId) {
@@ -1269,7 +1320,6 @@ function handleInvasiveTimeout(levelId) {
     }
 
     st.activeInvasiveCard = null;
-    st.nextSpawnThreshold = Object.keys(st.placements).length + randomInt(2, 4);
 
     if (currentLevelId === levelId) {
         hideInvasiveChallenge();
@@ -1283,6 +1333,9 @@ function handleInvasiveTimeout(levelId) {
             alert('⏰ Waktu habis! Hewan invasif kabur, tapi untungnya belum ada gerbong yang diacak.');
         }
     }
+
+    // jadwalkan kemunculan berikutnya, tetap acak & tak terduga
+    scheduleNextInvasive(levelId);
 }
 
 /* ---- Seret-lepas kartu invasif ke kandang karantina (mouse & sentuh) ---- */
